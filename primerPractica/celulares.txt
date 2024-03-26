@@ -1,0 +1,79 @@
+id: 1;
+nombre: Samsung Galaxy S21
+descripción: Samsung Galaxy S21
+marca: Samsung
+precio: 12000
+stockMin: 50
+stockDisp: 70
+
+id: 2;
+nombre: iPhone 13 Pro
+descripción: iPhone 13 Pro
+marca: Apple
+precio: 13000
+stockMin: 60
+stockDisp: 80
+
+id: 3;
+nombre: Xiaomi Mi 11
+descripción: Xiaomi Mi 11
+marca: Xiaomi
+precio: 9000
+stockMin: 40
+stockDisp: 55
+
+id: 4;
+nombre: Huawei P40 Pro
+descripción: Huawei P40 Pro
+marca: Huawei
+precio: 10000
+stockMin: 45
+stockDisp: 65
+
+id: 5;
+nombre: OnePlus 9 Pro
+descripción: OnePlus 9 Pro
+marca: OnePlus
+precio: 11000
+stockMin: 55
+stockDisp: 75
+
+id: 6;
+nombre: Google Pixel 6
+descripción: Google Pixel 6
+marca: Google
+precio: 9500
+stockMin: 45
+stockDisp: 60
+
+id: 7;
+nombre: Oppo Find X3 Pro
+descripción: Oppo Find X3 Pro
+marca: Oppo
+precio: 10500
+stockMin: 50
+stockDisp: 70
+
+id: 8;
+nombre: Sony Xperia 1 III
+descripción: Sony Xperia 1 III
+marca: Sony
+precio: 11500
+stockMin: 60
+stockDisp: 80
+
+id: 9;
+nombre: Motorola Edge+
+descripción: Motorola Edge+
+marca: Motorola
+precio: 9500
+stockMin: 50
+stockDisp: 65
+
+id: 10;
+nombre: LG Wing
+descripción: LG Wing
+marca: LG
+precio: 10500
+stockMin: 50
+stockDisp: 70

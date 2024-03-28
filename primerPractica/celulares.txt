@@ -1,79 +1,39 @@
-id: 1;
-nombre: Samsung Galaxy S21
-descripción: Samsung Galaxy S21
-marca: Samsung
-precio: 12000
-stockMin: 50
-stockDisp: 70
+1 12000 Samsung
+70 50 Samsung
+Galaxy S21
 
-id: 2;
-nombre: iPhone 13 Pro
-descripción: iPhone 13 Pro
-marca: Apple
-precio: 13000
-stockMin: 60
-stockDisp: 80
+2 13000 Apple
+60 80 iPhone
+13 Pro
 
-id: 3;
-nombre: Xiaomi Mi 11
-descripción: Xiaomi Mi 11
-marca: Xiaomi
-precio: 9000
-stockMin: 40
-stockDisp: 55
+3 9000 Xiaomi
+55 40 Xiaomi
+Mi 11
 
-id: 4;
-nombre: Huawei P40 Pro
-descripción: Huawei P40 Pro
-marca: Huawei
-precio: 10000
-stockMin: 45
-stockDisp: 65
+4 10000 Huawei
+65 45 Huawei
+P40 Pro
 
-id: 5;
-nombre: OnePlus 9 Pro
-descripción: OnePlus 9 Pro
-marca: OnePlus
-precio: 11000
-stockMin: 55
-stockDisp: 75
+5 11000 OnePlus
+75 55 OnePlus
+9 Pro
 
-id: 6;
-nombre: Google Pixel 6
-descripción: Google Pixel 6
-marca: Google
-precio: 9500
-stockMin: 45
-stockDisp: 60
+6 9500 Google
+60 45 Google
+Pixel 6
 
-id: 7;
-nombre: Oppo Find X3 Pro
-descripción: Oppo Find X3 Pro
-marca: Oppo
-precio: 10500
-stockMin: 50
-stockDisp: 70
+7 10500 Oppo
+70 100 Oppo
+Find X3 Pro
 
-id: 8;
-nombre: Sony Xperia 1 III
-descripción: Sony Xperia 1 III
-marca: Sony
-precio: 11500
-stockMin: 60
-stockDisp: 80
+8 11500 Sony
+80 60 Sony
+Xperia 1 III
 
-id: 9;
-nombre: Motorola Edge+
-descripción: Motorola Edge+
-marca: Motorola
-precio: 9500
-stockMin: 50
-stockDisp: 65
+9 9500 Motorola
+55 70 Motorola
+Edge 30
 
-id: 10;
-nombre: LG Wing
-descripción: LG Wing
-marca: LG
-precio: 10500
-stockMin: 50
-stockDisp: 70
+10 10500.00 Motorola
+70 50 Motorola
+Edge 40 Pro

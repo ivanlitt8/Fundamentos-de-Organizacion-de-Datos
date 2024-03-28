@@ -39,61 +39,68 @@ type
         nombre: string[50];
         descripcion: string[100];
     end;
-
-    archivoCelulares = file of celular;
-
-procedure leerCelular(var arch: Text; var cel: celular);
+	archivoCelulares = file of celular;
+procedure leerTxt(var arch: Text; var cel: celular);
 begin
     readln(arch, cel.codigo, cel.precio, cel.marca);
     readln(arch, cel.stockDisponible, cel.stockMinimo, cel.descripcion);
     readln(arch, cel.nombre);
 end;
-procedure exportarArchivo(var archRegistros: archivoCelulares; var archTexto: Text);
+procedure leerDat(var arch: Text; var cel: celular);
+begin
+    readln(arch, cel.codigo, cel.precio, cel.marca);
+    readln(arch, cel.stockDisponible, cel.stockMinimo, cel.descripcion);
+    readln(arch, cel.nombre);
+end;
+procedure exportarArchivo(var arch: archivoCelulares);
 var
+    txtCelulares: Text;
     cel: celular;
 begin
-    rewrite(archTexto);
-    reset(archRegistros);
-    while not eof(archRegistros) do begin
-        read(archRegistros, cel);
-        writeln(archTexto, cel.codigo, cel.precio:1:2, cel.marca);
-        writeln(archTexto, cel.stockDisponible, cel.stockMinimo, cel.descripcion);
-        writeln(archTexto, cel.nombre);
-        writeln(archTexto);
+    assign(txtCelulares, 'celulares.txt');
+    rewrite(txtCelulares);
+	reset(arch);
+    while not eof(arch) do begin
+        read(arch, cel);
+        writeln(txtCelulares, cel.codigo, ' ', cel.precio:0:2, cel.marca);
+        writeln(txtCelulares, cel.stockDisponible, ' ', cel.stockMinimo, cel.descripcion);
+        writeln(txtCelulares, cel.nombre);
     end;
-	close(archTexto);
-    close(archRegistros);
+	close(arch);
+    close(txtCelulares);
     writeln('El archivo "celulares.txt" se ha exportado correctamente.');
 end;
 
 procedure imprimirStockMenor(var arch: archivoCelulares);
 var
-	cel: celular;
+    cel: celular;
 begin
-	reset(arch);
+    reset(arch);
     writeln('Los celulares con stock menor al minimo son:');
     writeln();
     while not eof(arch) do begin
         read(arch, cel);
         if(cel.stockDisponible < cel.stockMinimo) then begin
-			writeln('Codigo de celular:', cel.codigo);
-			writeln('Precio:', cel.precio:0:2);
-			writeln('Marca:', cel.marca);
-			writeln('Stock disponible:', cel.stockDisponible);
-			writeln('Stock minimo:', cel.stockMinimo);
-			writeln('Descripcion:', cel.descripcion);
-			writeln('Nombre:', cel.nombre);
-			writeln('-------------------------');
-		end;
-	end;
+            writeln('Codigo de celular:', cel.codigo);
+            writeln('Precio:', cel.precio:0:2);
+            writeln('Marca:', cel.marca);
+            writeln('Stock disponible:', cel.stockDisponible);
+            writeln('Stock minimo:', cel.stockMinimo);
+            writeln('Descripcion:', cel.descripcion);
+            writeln('Nombre:', cel.nombre);
+            writeln('-------------------------');
+        end;
+    end;
     close(arch);
 end;
+
 procedure imprimirCelulares(var arch: archivoCelulares);
 var
     cel: celular;
 begin
     reset(arch);
-    writeln('Celulares cargados:');
+    writeln('Imprimiendo celulares leidos:');
+    writeln();
     while not eof(arch) do begin
         read(arch, cel);
         writeln('Codigo de celular: ', cel.codigo);
@@ -107,31 +114,30 @@ begin
     end;
     close(arch);
 end;
+procedure crearNuevoArchivo (var txtCelulares: Text ; var regCelulares: archivoCelulares);
+var
+	cel: celular;
+begin
+	reset(txtCelulares);
+    while not eof(txtCelulares) do begin
+        leerTxt(txtCelulares, cel);
+        write(regCelulares, cel);
+    end;
+    close(regCelulares);
+    close(txtCelulares);
+end;
 var
     txtCelulares: Text;
     regCelulares: archivoCelulares;
-    cel: celular;
 begin
-    assign(txtCelulares, 'celulares.txt');
-    reset(txtCelulares);
-
+    assign(txtCelulares, 'celulares.txt'); 
+    
     assign(regCelulares, 'celulares.dat');
     rewrite(regCelulares);
-
-    while not eof(txtCelulares) do
-    begin
-        leerCelular(txtCelulares, cel);
-        write(regCelulares, cel);
-    end;
-
-    close(txtCelulares);
-    close(regCelulares);
-
-    writeln('Los celulares se han cargado correctamente en el archivo "celulares.dat".');
-	writeln();
-	writeln('Imprimiendo celulares cargados:');
-	imprimirCelulares(regCelulares);
-	imprimirStockMenor(regCelulares);
-	exportarArchivo(regCelulares, txtCelulares);
 	
+	crearNuevoArchivo(txtCelulares,regCelulares);
+    
+    imprimirCelulares(regCelulares);
+    imprimirStockMenor(regCelulares);
+    exportarArchivo(regCelulares);
 end.

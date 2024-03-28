@@ -1,39 +1,30 @@
-1 12000 Samsung
+1 12000.00 Samsung
 70 50 Samsung
 Galaxy S21
-
-2 13000 Apple
+2 13000.00 Apple
 60 80 iPhone
 13 Pro
-
-3 9000 Xiaomi
+3 9000.00 Xiaomi
 55 40 Xiaomi
 Mi 11
-
-4 10000 Huawei
+4 10000.00 Huawei
 65 45 Huawei
 P40 Pro
-
-5 11000 OnePlus
+5 11000.00 OnePlus
 75 55 OnePlus
 9 Pro
-
-6 9500 Google
+6 9500.00 Google
 60 45 Google
 Pixel 6
-
-7 10500 Oppo
+7 10500.00 Oppo
 70 100 Oppo
 Find X3 Pro
-
-8 11500 Sony
+8 11500.00 Sony
 80 60 Sony
 Xperia 1 III
-
-9 9500 Motorola
+9 9500.00 Motorola
 55 70 Motorola
 Edge 30
-
 10 10500.00 Motorola
 70 50 Motorola
 Edge 40 Pro

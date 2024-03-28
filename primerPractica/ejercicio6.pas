@@ -12,6 +12,7 @@
 	NOTA: Las búsquedas deben realizarse por nombre de celular.   
 }
 program ejercicio6;
+
 type
     celular = record
         codigo: integer;
@@ -22,65 +23,68 @@ type
         nombre: string[50];
         descripcion: string[100];
     end;
-
-    archivoCelulares = file of celular;
-
-procedure leerCelular(var arch: Text; var cel: celular);
+	archivoCelulares = file of celular;
+procedure leerTxt(var arch: Text; var cel: celular);
 begin
     readln(arch, cel.codigo, cel.precio, cel.marca);
     readln(arch, cel.stockDisponible, cel.stockMinimo, cel.descripcion);
     readln(arch, cel.nombre);
 end;
-procedure exportarArchivo(var archRegistros: archivoCelulares; var archTexto: Text);
+procedure leerDat(var arch: Text; var cel: celular);
+begin
+    readln(arch, cel.codigo, cel.precio, cel.marca);
+    readln(arch, cel.stockDisponible, cel.stockMinimo, cel.descripcion);
+    readln(arch, cel.nombre);
+end;
+procedure exportarArchivo(var arch: archivoCelulares);
 var
+    txtCelulares: Text;
     cel: celular;
 begin
-    rewrite(archTexto);
-    reset(archRegistros);
-
-    while not eof(archRegistros) do
-    begin
-        read(archRegistros, cel);
-        writeln(archTexto, cel.codigo,' ', cel.precio:0:2,' ', cel.marca);
-        writeln(archTexto, cel.stockDisponible,' ', cel.stockMinimo,' ', cel.descripcion);
-        writeln(archTexto, cel.nombre);
-        writeln(archTexto);
+    assign(txtCelulares, 'celulares.txt');
+    rewrite(txtCelulares);
+	reset(arch);
+    while not eof(arch) do begin
+        read(arch, cel);
+        writeln(txtCelulares, cel.codigo, ' ', cel.precio:0:2, cel.marca);
+        writeln(txtCelulares, cel.stockDisponible, ' ', cel.stockMinimo, cel.descripcion);
+        writeln(txtCelulares, cel.nombre);
     end;
-
-    close(archRegistros);
-    close(archTexto);
-
+	close(arch);
+    close(txtCelulares);
     writeln('El archivo "celulares.txt" se ha exportado correctamente.');
 end;
 
 procedure imprimirStockMenor(var arch: archivoCelulares);
 var
-	cel: celular;
+    cel: celular;
 begin
-	reset(arch);
+    reset(arch);
     writeln('Los celulares con stock menor al minimo son:');
     writeln();
     while not eof(arch) do begin
         read(arch, cel);
         if(cel.stockDisponible < cel.stockMinimo) then begin
-			writeln('Codigo de celular: ', cel.codigo);
-			writeln('Precio: ', cel.precio:0:2);
-			writeln('Marca: ', cel.marca);
-			writeln('Stock disponible: ', cel.stockDisponible);
-			writeln('Stock minimo: ', cel.stockMinimo);
-			writeln('Descripcion: ', cel.descripcion);
-			writeln('Nombre: ', cel.nombre);
-			writeln('-------------------------');
-		end;
-	end;
+            writeln('Codigo de celular:', cel.codigo);
+            writeln('Precio:', cel.precio:0:2);
+            writeln('Marca:', cel.marca);
+            writeln('Stock disponible:', cel.stockDisponible);
+            writeln('Stock minimo:', cel.stockMinimo);
+            writeln('Descripcion:', cel.descripcion);
+            writeln('Nombre:', cel.nombre);
+            writeln('-------------------------');
+        end;
+    end;
     close(arch);
 end;
+
 procedure imprimirCelulares(var arch: archivoCelulares);
 var
     cel: celular;
 begin
     reset(arch);
-    writeln('Celulares cargados:');
+    writeln('Imprimiendo celulares leidos:');
+    writeln();
     while not eof(arch) do begin
         read(arch, cel);
         writeln('Codigo de celular: ', cel.codigo);
@@ -94,30 +98,87 @@ begin
     end;
     close(arch);
 end;
+procedure crearNuevoArchivo (var txtCelulares: Text ; var regCelulares: archivoCelulares);
 var
-    txtCelulares: Text;
-    regCelulares: archivoCelulares;
-    cel: celular;
+	cel: celular;
 begin
-    assign(txtCelulares, 'celulares.txt');
-    reset(txtCelulares);
-
-    assign(regCelulares, 'celulares.dat');
-    rewrite(regCelulares);
-
-    while not eof(txtCelulares) do
-    begin
-        leerCelular(txtCelulares, cel);
+	reset(txtCelulares);
+    while not eof(txtCelulares) do begin
+        leerTxt(txtCelulares, cel);
         write(regCelulares, cel);
     end;
-
-    close(txtCelulares);
     close(regCelulares);
-
-    writeln('Los celulares se han cargado correctamente en el archivo "celulares.dat".');
-	writeln();
-	writeln('Imprimiendo celulares cargados:');
-	imprimirCelulares(regCelulares);
-	imprimirStockMenor(regCelulares);
-	exportarArchivo(regCelulares, txtCelulares);
+    close(txtCelulares);
+end;
+procedure leerCelular( var C: celular);
+begin
+	writeln('Ingrese ID de celular: ');
+	readln(C.codigo);
+	writeln('Ingrese precio: ');
+	readln(C.precio);
+	writeln('Ingrese marca: ');
+	readln(C.marca);
+	writeln('Ingrese stock disponible: ');
+	readln(C.stockDisponible);
+	writeln('Ingrese stock minimo: ');
+	readln(C.stockMinimo);
+	writeln('Ingrese descripcion: ');
+	readln(C.descripcion);
+	writeln('Ingrese modelo: ');
+	readln(C.nombre);
+end;
+procedure agregarCelulares (var arch: archivoCelulares);
+var
+	C: celular;
+	opcion: char;
+begin
+	writeln('Agregar celular? (Y/N)');
+	readln(opcion);
+	while(opcion<>'N') do begin
+		reset(arch);
+		leerCelular(C);
+		seek(arch, FileSize(arch));
+		write(arch, C);
+		close(arch);
+		writeln('Agregar celular? (Y/N)');
+		readln(opcion);
+	end;
+end;
+procedure exportarArchivoSinStock(var arch: archivoCelulares);
+begin
+end;
+var
+    datCelulares: archivoCelulares;
+    opcion: char;
+begin
+    assign(datCelulares, 'celulares.dat'); 
+        
+    repeat
+		writeln('Seleccione una opcion: ');
+		writeln('1. Imprimir listado de celulares');
+        writeln('2. Imprimir celulares con stock menor al minimo');
+        writeln('3. Modificar skock de celular');
+        writeln('4. Agregar celulares');
+        writeln('5. Exportar listado celulares sin stock');
+        writeln('6. Exportar listado celulares');
+        writeln('7. Salir');
+        readln(opcion);
+        
+        case opcion of
+			'1': imprimirCelulares(datCelulares);
+            '2': imprimirStockMenor(datCelulares);
+            //'3': begin
+                    //writeln('Ingrese ID empleado: ');
+                   // readln(ID);
+                   // writeln('Ingrese nueva edad: ');
+                   // readln(nuevaEdad);
+                   // cambiarEdad(empleados, ID, nuevaEdad);
+				// end;
+            '4': agregarCelulares(datCelulares);
+            '5': exportarArchivoSinStock(datCelulares);
+            '6': exportarArchivo(datCelulares);
+        else
+            writeln('Opcion inválida.');
+        end;
+    until opcion = '7';
 end.

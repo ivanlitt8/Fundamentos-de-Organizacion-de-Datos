@@ -1,0 +1,16 @@
+001 25.00 drama
+El tunel
+002 20.50 ciencia ficcion
+La invencion de Morel
+003 18.75 terror
+Los siete locos
+004 22.99 historico
+Martin Fierro
+005 30.00 romance
+El amor en los tiempos del colera
+006 15.25 comedia
+Esperando a Godot
+007 28.50 suspenso
+La casa de los espiritus
+008 17.99 aventura
+La peste

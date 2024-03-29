@@ -116,8 +116,7 @@ begin
     while not eof(archivo) and not encontrado do
     begin
         read(archivo, E);
-        if E.id = idEmpleado then
-        begin
+        if E.id = idEmpleado then begin
             encontrado := true;
             E.edad := nuevaEdad;
             seek(archivo, filepos(archivo) - 1);

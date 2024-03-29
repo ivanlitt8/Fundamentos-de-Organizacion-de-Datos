@@ -145,11 +145,51 @@ begin
 	end;
 end;
 procedure exportarArchivoSinStock(var arch: archivoCelulares);
+var
+	txt: Text;
+	cel: celular;
 begin
+	assign(txt, 'SinStock.txt');
+	rewrite(txt);
+	reset(arch);
+    while not eof(arch) do begin
+        read(arch, cel);
+        if(cel.stockDisponible = 0) then begin
+			writeln(txt, cel.codigo, ' ', cel.precio:0:2, cel.marca);
+			writeln(txt, cel.stockDisponible, ' ', cel.stockMinimo, ' ', cel.descripcion);
+			writeln(txt, cel.nombre);
+		end;
+    end;
+    close(arch);
+    close(txt);
+    writeln('El archivo "SinStock.txt" se ha exportado correctamente.');
+end;
+procedure cambiarStock( var arch: archivoCelulares; ID: integer ; nuevoStock: integer);
+var
+	encontrado: boolean;
+	cel: celular;
+begin
+	encontrado:= false;
+	reset(arch);
+    while not eof(arch) and not encontrado do begin
+        read(arch, cel);
+        if(cel.codigo = ID) then begin
+			cel.stockDisponible:= nuevoStock;
+			seek(arch, filepos(arch)-1);
+			write(arch, cel);
+			encontrado:= true;
+		end;
+    end;
+    close(arch);
+    if(encontrado)then
+		writeln('Stock de celular actualizado correctamente.')
+    else
+		writeln('Celular con codigo ', ID, ' no encontrado.');
 end;
 var
     datCelulares: archivoCelulares;
     opcion: char;
+    ID,nuevoStock: integer;
 begin
     assign(datCelulares, 'celulares.dat'); 
         
@@ -167,18 +207,19 @@ begin
         case opcion of
 			'1': imprimirCelulares(datCelulares);
             '2': imprimirStockMenor(datCelulares);
-            //'3': begin
-                    //writeln('Ingrese ID empleado: ');
-                   // readln(ID);
-                   // writeln('Ingrese nueva edad: ');
-                   // readln(nuevaEdad);
-                   // cambiarEdad(empleados, ID, nuevaEdad);
-				// end;
+            '3': begin
+                    writeln('Ingrese codigo de celular: ');
+                    readln(ID);
+                    writeln('Ingrese nuevo stock: ');
+                    readln(nuevoStock);
+                    cambiarStock(datCelulares, ID, nuevoStock);
+				 end;
             '4': agregarCelulares(datCelulares);
             '5': exportarArchivoSinStock(datCelulares);
             '6': exportarArchivo(datCelulares);
+            '7': writeln('Saliendo del programa...');
         else
-            writeln('Opcion inválida.');
+            writeln('Opcion invalida.');
         end;
     until opcion = '7';
 end.

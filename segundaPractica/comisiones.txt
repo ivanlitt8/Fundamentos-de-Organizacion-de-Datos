@@ -1,0 +1,30 @@
+101 Juan
+500
+101 Juan
+250
+101 Juan
+100
+102 Maria
+300
+102 Maria
+150
+102 Maria
+200
+103 Carlos
+750
+103 Carlos
+300
+103 Carlos
+500
+104 Ana
+400
+105 Luis
+600
+106 Sofia
+450
+107 Pablo
+800
+108 Laura
+350
+109 Marcos
+700

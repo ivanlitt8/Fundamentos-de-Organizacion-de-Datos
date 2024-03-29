@@ -2,7 +2,7 @@
 70 50 Samsung
 Galaxy S21
 2 13000.00 Apple
-60 80 iPhone
+0 80 iPhone
 13 Pro
 3 9000.00 Xiaomi
 55 40 Xiaomi
@@ -26,5 +26,14 @@ Xperia 1 III
 55 70 Motorola
 Edge 30
 10 10500.00 Motorola
-70 50 Motorola
+10 50 Motorola
 Edge 40 Pro
+11 8800.00 LG
+0 50 LG
+LG Blur
+12 9900.00 Nokia
+0 10 Nokia
+Nokia 1100
+55 5000.00 Redmi
+50 20 Redmi
+Redmi Note

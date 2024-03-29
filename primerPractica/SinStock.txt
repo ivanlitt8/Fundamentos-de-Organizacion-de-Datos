@@ -1,0 +1,9 @@
+2 13000.00 Apple
+0 80  iPhone
+13 Pro
+11 8800.00LG
+0 50 LG
+LG Blur
+12 9900.00Nokia
+0 10 Nokia
+Nokia 1100

@@ -25,7 +25,6 @@
 	NOTA: Para la actualización del inciso a) los archivos deben ser recorridos sólo una vez.
 }
 
-
 program ejercicio2;
 const
 	valorAlto = 9999;
@@ -43,58 +42,122 @@ type
 	end;
 	archivoAlumnos = file of alumno;
 	archivoDetalle = file of legajo;
-procedure leer( var arch: Text ; var C: comision);
+procedure leerDetalle( var arch: archivoDetalle ; var L: legajo);
 begin
 	if(not eof(arch)) then begin
-		readln(arch,C.id,C.nombre);
-		readln(arch,C.monto);
+		read(arch,L);
 	end
 	else
-		C.id := valorAlto;
+		L.id := valorAlto;
 end;
-procedure comprimir(var txtComisiones: Text ; var txtCompacto: archivoComisiones);
-var
-	C,Caux: comision;
-begin	
-	reset(txtComisiones);
-	reset(txtCompacto);
-	leer(txtComisiones,C);
-	while (C.id <> valorAlto) do begin
-		Caux.id:= C.id;
-		Caux.nombre:= C.nombre;
-		Caux.monto:= 0;
-		while (C.id = Caux.id)  do begin
-			Caux.monto:= Caux.monto + C.monto;
-			leer(txtComisiones,C);
-		end;
-		write(txtCompacto, Caux);
-	end;
-	close(txtCompacto);
-	close(txtComisiones);
+procedure leerTxtMaestro( var arch: Text ; var A: alumno);
+begin
+	readln(arch, A.id, A.apellido);
+    readln(arch, A.nombre);
+    readln(arch, A.cursadas, A.finales);
+    writeln('Codigo: ', A.id);
+	writeln('Apellido: ', A.apellido);
+	writeln('Nombre: ', A.nombre);
+	writeln('Cursadas: ', A.cursadas);
+	writeln('Finales: ', A.finales);
+	writeln('------------------');
 end;
-procedure imprimirComisiones (var arch: archivoComisiones);
+procedure leerTxtDetalle( var arch: Text ; var L: legajo);
+begin
+    readln(arch, L.id, L.estado);
+    writeln('Codigo: ', L.id);
+	writeln('Estado: ', L.estado);
+	writeln('*******************');
+end;
+procedure imprimirMaestro(var arch: archivoAlumnos);
 var
-	C: comision;
+	A: alumno;
 begin
 	reset(arch);
-    writeln('Imprimiendo comisiones comprimidas:');
-    writeln();
-    while not eof(arch) do begin
-        read(arch, C);
-        writeln('ID empleado: ', C.id);
-        writeln('Nombre: ', C.nombre);
-        writeln('Monto: ', C.monto:0:2);
-        writeln('-------------------------');
+	writeln('Imprimiendo archivo actualizado: ');
+	writeln();
+	while not eof(arch) do begin
+		read(arch,A);
+		writeln('Codigo: ', A.id);
+		writeln('Apellido: ', A.apellido);
+		writeln('Nombre: ', A.nombre);
+		writeln('Cursadas: ', A.cursadas);
+		writeln('Finales: ', A.finales);
+		writeln('------------------');
+	end;
+	close(arch);
+end;
+procedure actualizarMaestro( var maestro: archivoAlumnos ; var detalle: archivoDetalle);
+var
+	L,Laux: legajo;
+	A: alumno;
+begin
+	reset(maestro);
+	reset(detalle);
+	read(maestro, A);
+	leerDetalle(detalle, L);
+	while(L.id <> valorAlto) do begin
+		Laux.id:= L.id;
+		writeln('alumno id: ', A.id,' legajo id: ',Laux.id);
+		while(L.id <> valorAlto)and(A.id = Laux.id) do begin
+			if (L.estado = 'Final') then begin
+				A.finales:= A.finales + 1;
+				A.cursadas:= A.cursadas - 1;
+			end
+			else if (L.estado = 'Cursada') then begin
+				A.cursadas:= A.cursadas + 1;
+			end;
+			leerDetalle(detalle,L);
+			writeln('alumno id: ', A.id,' legajo id: ',L.id);
+		end;
+		while(A.id <> Laux.id) do
+			read(maestro, A);
+		seek(maestro, filepos(maestro)-1);
+		write(maestro, A);
+		if (not eof(maestro)) then
+			read(maestro,A);
+	end;
+	close(maestro);
+	close(detalle);
+end;
+procedure generarArchivoMaestro( var txtMaestro: Text ; var datMaestro: archivoAlumnos);
+var
+	A: alumno;
+begin
+	reset(txtMaestro);
+	while not eof(txtMaestro) do begin
+        leerTxtMaestro(txtMaestro, A);
+        write(datMaestro, A);
     end;
-    close(arch);
+	close(datMaestro);
+	close(txtMaestro);
+end;
+procedure generarArchivoDetalle( var txtDetalle: Text ; var datDetalle: archivoDetalle);
+var
+	L: legajo;
+begin
+	reset(txtDetalle);
+	while not eof(txtDetalle) do begin
+        leerTxtDetalle(txtDetalle, L);
+        write(datDetalle, L);
+    end;
+	close(datDetalle);
+	close(txtDetalle);
 end;
 var
 	txtMaestro: Text;
 	txtDetalle: Text;
+	datDetalle: archivoDetalle;
+	datMaestro: archivoAlumnos;
 begin
-	assign(txtMaestro, 'alumnos.txt');
-    assign(txtDetalle, 'detalle.txt');
-    
-	actualizarMaestro(txtMaestro,txtDetalle);
-		
+	assign(txtMaestro,'alumnos.txt');
+    assign(txtDetalle,'detalle.txt');
+    assign(datMaestro,'alumnos.dat');
+    assign(datDetalle,'detalle.dat');
+    rewrite(datDetalle);
+    rewrite(datMaestro);
+    generarArchivoMaestro(txtMaestro,datMaestro);
+    generarArchivoDetalle(txtDetalle,datDetalle);
+	actualizarMaestro(datMaestro,datDetalle);
+	imprimirMaestro(datMaestro);
 end.

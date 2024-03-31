@@ -1,0 +1,15 @@
+Producto: Pizza Margarita
+ - Descripcion: Pizza con salsa de tomate, mozzarella y albahaca
+ - Stock disponible: 9
+ - Precio: 7.99
+
+Producto: Filetes de Pescado
+ - Descripcion: Filetes de pescado congelados
+ - Stock disponible: 6
+ - Precio: 6.99
+
+Producto: Tarta de Frutas
+ - Descripcion: Tarta con relleno de frutas variadas
+ - Stock disponible: 5
+ - Precio: 8.49
+

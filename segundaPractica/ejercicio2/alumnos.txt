@@ -1,0 +1,20 @@
+101
+Gonzalez
+Juan
+4 3
+102
+Rodriguez
+Maria
+3 1
+103
+Perez
+Pedro
+3 3
+104
+Martinez
+Ana
+2 1
+105
+Lopez
+Carlos
+5 4

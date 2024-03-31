@@ -1,0 +1,16 @@
+Buenos Aires
+750 850
+Chubut
+80 90
+Cordoba
+350 430
+La Rioja
+50 60
+Mendoza
+200 250
+Salta
+100 120
+San Juan
+150 180
+Santa Fe
+200 220

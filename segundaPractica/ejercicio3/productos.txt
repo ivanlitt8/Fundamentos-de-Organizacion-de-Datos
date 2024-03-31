@@ -1,0 +1,16 @@
+1001 Detergente
+5.99 150 50
+1002 Limpiavidrios
+3.49 80 30
+1003 Desinfectante
+7.99 100 40
+1004 Lavandina
+2.99 200 80
+1005 Esponja
+1.25 100 100
+1006 Quitamanchas
+4.75 120 60
+1007 Ambientador
+6.25 21 20
+1008 Guantes
+2.49 180 70

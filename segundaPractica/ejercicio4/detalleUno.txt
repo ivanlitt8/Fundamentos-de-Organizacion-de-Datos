@@ -1,0 +1,10 @@
+Buenos Aires
+101 450 500
+Buenos Aires
+102 300 350
+Cordoba
+201 200 250
+Cordoba
+202 150 180
+Santa Fe
+301 350 400

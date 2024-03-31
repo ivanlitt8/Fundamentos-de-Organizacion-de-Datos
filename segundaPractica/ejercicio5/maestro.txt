@@ -1,0 +1,32 @@
+001
+Helado de vainilla
+Helado de vainilla en envase de 1 litro
+100 20 5.99
+002
+Pizza Margarita
+Pizza con salsa de tomate, mozzarella y albahaca
+50 10 7.99
+003
+Papas Fritas
+Papas fritas congeladas en bolsa de 500g
+80 15 3.49
+004
+Empanadas de Carne
+Empanadas rellenas de carne
+120 25 9.99
+005
+Filetes de Pescado
+Filetes de pescado congelados
+60 12 6.99
+006
+Nuggets de Pollo
+Nuggets de pollo empanizados
+90 18 4.99
+007
+Tarta de Frutas
+Tarta con relleno de frutas variadas
+40 8 8.49
+008
+Croquetas de Jamon y Queso
+Croquetas rellenas de jamon y queso
+70 14 5.49

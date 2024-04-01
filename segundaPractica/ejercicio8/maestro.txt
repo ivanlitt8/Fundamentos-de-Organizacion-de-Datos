@@ -1,0 +1,40 @@
+123
+Juan
+Perez
+2024 1 5 300.00
+123
+Juan
+Perez
+2024 1 15 500.00
+123
+Juan
+Perez
+2024 2 25 750.00
+123
+Juan
+Perez
+2024 3 20 900.00
+456
+Maria
+Lopez
+2024 1 10 600.00
+456
+Maria
+Lopez
+2024 2 18 350.00
+456
+Maria
+Lopez
+2024 3 12 800.00
+789
+Pedro
+Gomez
+2024 1 8 550.00
+789
+Pedro
+Gomez
+2024 2 10 700.00
+789
+Pedro
+Gomez
+2024 3 5 400.00

@@ -1,0 +1,42 @@
+Contabilidad
+Contabilidad A
+11 7 15
+Contabilidad
+Contabilidad A
+11 8 15
+Contabilidad
+Contabilidad A
+12 4 9
+Contabilidad
+Contabilidad B
+13 11 23
+Produccion
+Produccion A
+4 10 20
+Produccion
+Produccion A
+5 6 12
+Produccion
+Produccion A
+8 8 18
+Produccion
+Produccion B
+6 12 25
+Produccion
+Produccion B
+9 14 30
+Ventas
+Ventas A
+1 5 10
+Ventas
+Ventas A
+2 8 15
+Ventas
+Ventas A
+7 2 5
+Ventas
+Ventas B
+3 3 8
+Ventas
+Ventas B
+10 12 22

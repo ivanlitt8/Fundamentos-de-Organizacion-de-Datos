@@ -23,6 +23,8 @@
 
 
 program ejercicio9;
+const
+	valorAlto = 9999;
 type
 	maestro = record
 		idProv: integer;
@@ -36,12 +38,13 @@ type
 procedure leerMaestrotxt(var txt: Text ; var M: Maestro );
 begin
 	readln(txt,M.idProv,M.idLoc,M.mesa,M.cant);
-{
-	writeln(M.idProv);
-	writeln(M.idLoc);
-	writeln(M.mesa);
-	writeln(M.cant);
-}
+
+	writeln('ID Provincia: ',M.idProv);
+	writeln('ID Provincia: ',M.idLoc);
+	writeln('Numero Mesa: ',M.mesa);
+	writeln('Cantidad Votos: ',M.cant);
+	writeln();
+
 end;
 procedure generarMaestro(var txt: Text ; var arch: archivoMaestro);
 var
@@ -55,9 +58,51 @@ begin
 	close(txt);
 	close(arch)
 end;
-procedure reporte(var arch: archivoMaestro);
+procedure leerMaestro ( var arch: archivoMaestro; var M: maestro);
 begin
+	if not eof(arch) then
+		read(arch,M)
+	else
+		M.idProv:= valorAlto;
 end;
+procedure reporte(var arch: archivoMaestro);
+var
+	M: maestro;
+	votosTotal,votosProv,votosLoc,idProv,idLoc: integer;
+begin
+	reset(arch);
+	leerMaestro(arch,M);
+	votosTotal:= 0;
+	while(M.idProv<>valorAlto)do begin
+		idProv:= M.idProv;
+		votosProv:= 0;
+		while(M.idProv<>valorAlto)and(idProv = M.idProv)do begin
+			idLoc:= M.idLoc;
+			votosLoc:= 0;
+			while(idProv = M.idProv)and(idLoc = M.idLoc)do begin
+				votosLoc:= votosLoc + M.cant;
+				leerMaestro(arch,M);
+			end;
+			votosProv:= votosProv + votosLoc;
+			writeln('Codigo Localidad: ',idLoc, ' total de votos localidad: ',votosLoc);
+		end;
+		votosTotal:= votosTotal + votosProv;
+		writeln('Codigo Provincia: ',idProv, ' total de votos provincia: ',votosProv);
+		writeln();
+	end;
+	writeln('Total General de Votos: ',votosTotal);
+	close(arch);
+end;
+{
+	Código de Provincia
+	Código de Localidad 		Total de Votos
+	...................			...............
+	...................			...............
+	Total de Votos Provincia: ____
+	
+	Total General de Votos: ___
+}
+	
 var
 	archTxt: Text;
 	archDat: archivoMaestro;

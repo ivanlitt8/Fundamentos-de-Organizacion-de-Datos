@@ -22,42 +22,60 @@
 		existen en el sistema. Considere la implementación de esta opción de las
 		siguientes maneras:
 
-	i- Como un procedimiento separado del punto a).
+			i- Como un procedimiento separado del punto a).
 
-	ii- En el mismo procedimiento de actualización del punto a). Qué cambios
-		se requieren en el procedimiento del punto a) para realizar el informe en
-		el mismo recorrido?
+			ii- En el mismo procedimiento de actualización del punto a). Qué cambios
+				se requieren en el procedimiento del punto a) para realizar el informe en
+				el mismo recorrido?
 }
 
 program ejercicio12;
 const
-	valorAlto = 'ZZZZ';
-	dimF = 15;
+	valorAlto = 9999;
 type
 	maestro = record
-		dto: string[15];
-		division: string[15];
-		idEmp: integer;
-		cat: integer;
-		horas: integer;
+		id: integer;
+		nombreUser: string[10];
+		nombre: string[15];
+		apellido: string[15];
+		cantMails: integer;
+	end;
+	
+	detalle = record
+		id: integer;
+		destino: string[20];
+		cuerpo: string[50];
 	end;
 	
 	archivoMaestro = file of maestro;
-	vectValores = array [1..dimF] of real;
+	archivoDetalle = file of detalle;
 		
 procedure leerMaestrotxt(var txt: Text ; var M: Maestro );
 begin
-	readln(txt,M.dto);
-	readln(txt,M.division);
-	readln(txt,M.idEmp,M.cat,M.horas);
-
-	writeln('Departamento: ',M.dto);
-	writeln('Division: ',M.division);
-	writeln('ID empleado: ',M.idEmp);
-	writeln('Categoria: ',M.cat);
-	writeln('Cantidad horas: ',M.horas);
+	readln(txt,M.id);
+	readln(txt,M.nombreUser);
+	readln(txt,M.nombre);
+	readln(txt,M.apellido);
+	readln(txt,M.cantMails);
+	writeln('ID: ',M.id);
+	writeln('Nombre Usuario: ',M.nombreUser);
+	writeln('Nombre: ',M.nombre);
+	writeln('Apellido: ',M.apellido);
+	writeln('Cantidad de Mails: ',M.cantMails);
 	writeln();
 
+end;
+procedure leerDetalletxt(var txt: Text ; var D: detalle );
+begin
+	readln(txt,D.id);
+	readln(txt,D.destino);
+	readln(txt,D.cuerpo);
+{
+	writeln('ID: ',D.id);
+	writeln('Destinatario: ',D.destino);
+	writeln('Cuerpo: ',D.cuerpo);
+	writeln();
+}
 end;
 procedure generarMaestro(var txt: Text ; var arch: archivoMaestro);
 var
@@ -71,99 +89,111 @@ begin
 	close(txt);
 	close(arch)
 end;
-
-procedure leerMaestro ( var arch: archivoMaestro; var M: maestro);
+procedure generarDetalle(var txt: Text ; var arch: archivoDetalle);
+var
+	D: detalle;
+begin
+	reset(txt);
+	while not eof(txt) do begin
+		leerDetalletxt(txt,D);
+		write(arch,D);
+	end;
+	close(txt);
+	close(arch)
+end;
+procedure leerDetalle(var arch: archivoDetalle ; var D : detalle);
 begin
 	if not eof(arch) then
-		read(arch,M)
+		read(arch,D)
 	else
-		M.dto:= valorAlto;
+		D.id:= valorAlto;
 end;
-procedure reporte(var arch: archivoMaestro; V: vectValores);
+procedure actualizarLog (var archD: archivoDetalle ; var archM: archivoMaestro);
+var
+	D: detalle;
+	M: maestro;
+	txt: Text;
+begin
+	reset(archD);
+	reset(archM);
+	assign(txt,'users1.txt');
+	rewrite(txt);
+	leerDetalle(archD,D);
+	while (D.id<>valorAlto) do begin
+		read(archM,M);
+		while (D.id <> M.id) do begin
+			//writeln(M.nombreUser,' ', M.cantMails);
+			writeln(txt,'Usuario: ',M.nombreUser,' - Cantidad de mails: ',M.cantMails);
+			read(archM,M);
+		end;
+		while (D.id = M.id) do begin
+			M.cantMails:= M.cantMails + 1;
+            leerDetalle(archD, D);
+		end;
+		writeln(txt,'Usuario: ',M.nombreUser,' - Cantidad de mails: ',M.cantMails);
+		//writeln(M.nombreUser,' ', M.cantMails);
+        seek(archM, filepos(archM)-1);
+        write(archM, M);
+	end;
+	close(txt);
+	close(archD);
+	close(archM);
+	writeln('Usuarios exportados a users1.txt ');
+end;
+procedure imprimirLogsActualizados(var arch: archivoMaestro);
 var
 	M: maestro;
-	divHoras,idAct,horas,dtoHoras: integer;
-	divMonto,monto,dtoMonto: real;
-	dtoAct,divAct: string;
 begin
 	reset(arch);
-	leerMaestro(arch,M);
-	while(M.dto<>valorAlto)do begin
-		dtoAct:= M.dto;
-		dtoHoras:= 0;
-		dtoMonto:= 0;
-		writeln('DEPARTAMENTO ',M.dto);
-		writeln();
-		while(dtoAct = M.dto)do begin
-			divAct:= M.division;
-			divHoras:= 0;
-			divMonto:= 0;
-			writeln('** Division ',divAct,':');
-			while(dtoAct = M.dto)and(divAct = M.division)do begin
-				idAct:= M.idEmp;
-				horas:= 0;
-				monto:= 0;
-				while(dtoAct = M.dto)and(divAct = M.division)and(M.idEmp = idAct)do begin
-					horas:= horas + M.horas;
-					monto:= monto + (V[M.cat] * M.horas);
-					leerMaestro(arch,M);
-				end;
-				writeln('Numero empleado ',idAct,' total hs ',horas,' importe a cobrar ',monto:0:2);
-				divHoras:= divHoras + horas;
-				divMonto:= divMonto + monto;
-			end;					
-			writeln(' --- Total de horas division ',divHoras);
-			writeln(' --- Total monto division ',divMonto:0:2);
-			writeln();	
-			dtoHoras:= dtoHoras + divHoras;
-			dtoMonto:= dtoMonto + divMonto;
-		end;
-		writeln('Total horas departamento: ',dtoHoras);
-		writeln('Monto total departamento: ',dtoMonto:0:2);
-		writeln('--------------------------------');
+	while not eof (arch) do begin
+		read(arch,M);
+		writeln('ID: ',M.id);
+		writeln('Nombre Usuario: ',M.nombreUser);
+		writeln('Nombre: ',M.nombre);
+		writeln('Apellido: ',M.apellido);
+		writeln('Cantidad de Mails: ',M.cantMails);
 		writeln();
 	end;
 	close(arch);
 end;
-{
-	Departamento
-	División
-	Número de Empleado 		Total de Hs. 		Importe a cobrar
-		........			  ....... 				........
-		........			  ....... 				........
-	
-	Total de horas división: ____
-	Monto total por división: ____
-
-	División
-	.................
-	Total horas departamento: ____
-	Monto total departamento: ____
-}
-procedure cargarVector(var V: vectValores ; var txt:Text);
+procedure exportarUsuarios( var arch: archivoMaestro );
 var
-	cat: integer;
-	valor: real;
+	txt: Text;
+	M: maestro;
 begin
-	reset(txt);
-	while not eof(txt) do begin
-		readln(txt,cat,valor);
-		V[cat]:= valor;
-		//writeln('categoria: ',cat);
-		//writeln('valor: ',valor:0:2);
+	assign(txt,'users2.txt');
+	rewrite(txt);
+	reset(arch);
+	while not eof(arch) do begin
+		read(arch,M);
+		writeln(txt,'Usuario: ',M.nombreUser,' - Cantidad de mails: ',M.cantMails);
 	end;
+	close(arch);
 	close(txt);
+	writeln('Usuarios exportados a users2.txt ');
 end;
 var
-	archTxt,archVect: Text;
-	archDat: archivoMaestro;
-	V: vectValores;
+	logsTxt,usersTxt: Text;
+	logsDat: archivoMaestro;
+	usersDat: archivoDetalle;
 begin
-	assign(archTxt,'maestro.txt');
-	assign(archDat,'maestro.dat');
-	rewrite(archDat);
-	generarMaestro(archTxt,archDat);
-	assign(archVect,'valoresCategoria.txt');
-	cargarVector(V,archVect);
-	reporte(archDat,V);
+	assign(logsTxt,'logs.txt');
+	assign(logsDat,'logs.dat');
+	rewrite(logsDat);
+	writeln('----- Archivo Maestro -----');
+	generarMaestro(logsTxt,logsDat);
+	writeln('---------------------------');
+	writeln();
+	
+	assign(usersTxt,'usuarios.txt');
+	assign(usersDat,'usuarios.dat');
+	rewrite(usersDat);
+	generarDetalle(usersTxt,usersDat);
+	
+	actualizarLog(usersDat,logsDat);
+	writeln('-- Archivo Maestro Actualizado --');
+	imprimirLogsActualizados(logsDat);
+	writeln('---------------------------');
+	
+	exportarUsuarios(logsDat);
 end.

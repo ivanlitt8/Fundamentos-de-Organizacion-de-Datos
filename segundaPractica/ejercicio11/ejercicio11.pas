@@ -99,52 +99,59 @@ begin
 end;
 procedure reporte(var arch: archivoMaestro);
 var
-	M: maestro;
-	encontrado: boolean;
-	anio,diaAct,mesAct,tiempoAnio,tiempoMes,tiempoUser,tiempoDia,idAct:integer;
+  M: maestro;
+  encontrado: boolean;
+  anio, diaAct, mesAct, tiempoAnio, tiempoMes, tiempoDia, tiempoUser, idAct: integer;
 begin
-	reset(arch);
-	write('Ingrese anio para reporte: ');
-	readln(anio);
-	encontrado:= false;
-	tiempoAnio:= 0;
-	leerMaestro(arch,M);
-	while(M.anio<>valorAlto)do begin
-		while(M.anio<>anio) do
-			leerMaestro(arch,M);
-		writeln('Anio: ',M.anio);
-		while(M.anio=anio) do begin
-			encontrado:= true;
-			mesAct:= M.mes;
-			
-			writeln('		Mes: ',mesAct);
-			while(mesAct = M.mes)do begin
-				diaAct:= M.dia;
-				tiempoMes:= 0;
-				while(mesAct = M.mes)and(diaAct = M.dia)do begin
-					writeln('			Dia: ',diaAct);
-					idAct:= M.id;
-					tiempoDia:= 0;
-					while(mesAct = M.mes)and(diaAct = M.dia)and(M.id = idAct)do begin
-						tiempoUser:= M.minutos;
-						leerMaestro(arch,M);
-					end;
-					writeln('				Id Usuario: ',idAct,' - Tiempo Total: ',tiempoUser,' de acceso en el dia ',diaAct,' mes ',mesAct);
-					tiempoDia:= tiempoDia + tiempoUser;
-				end;
-				writeln('			Tiempo total de acceso del dia ',diaAct,' es: ',tiempoDia);
-				tiempoMes:= tiempoMes + tiempoDia;
+  reset(arch);
+  write('Ingrese anio para reporte: ');
+  readln(anio);
+  encontrado := false; 
+  tiempoAnio := 0;
+  leerMaestro(arch, M);
+  while M.anio <> valorAlto do
+  begin
+    if M.anio = anio then begin
+      encontrado := true;       
+      tiempoMes := 0;
+      writeln('Anio: ', M.anio);
+      while (M.anio = anio) do begin
+        mesAct := M.mes;
+        writeln('    Mes: ', mesAct);
+        tiempoDia := 0;
+        while (M.anio = anio) and (M.mes = mesAct) do begin
+          diaAct := M.dia;
+          writeln('        Dia: ', diaAct);
+          while (M.anio = anio) and (M.mes = mesAct) and (M.dia = diaAct) do begin
+            idAct := M.id;
+            tiempoUser := 0;
+            while (M.anio = anio) and (M.mes = mesAct) and (M.dia = diaAct) and (M.id=idAct) do begin
+				tiempoUser := tiempoUser + M.minutos;
+				leerMaestro(arch, M);
 			end;
-			writeln();
-			writeln('		Total tiempo de acceso mensual: ',tiempoMes);
-			writeln();
-			tiempoAnio:= tiempoAnio + tiempoMes;
-		end;
-		writeln('		Total tiempo de acceso anual: ',tiempoAnio);
- 	end;
-	if not encontrado then
-		writeln('Anio no encontrado');	
-	close(arch);
+			tiempoDia := tiempoDia + tiempoUser;
+			writeln('            Id Usuario: ', idAct, ' - Tiempo Total: ', tiempoUser, ' minutos');
+          end;
+          //tiempoDia := tiempoDia + tiempoUser;
+        end;
+		writeln();
+        writeln('        Tiempo total de acceso del mes ', mesAct, ': ', tiempoDia, ' minutos');
+        writeln('	----------------------------------------------');
+        writeln();
+        tiempoMes := tiempoMes + tiempoDia;
+      end;
+
+      writeln('    Total tiempo de acceso anual: ', tiempoMes, ' minutos');
+      tiempoAnio := tiempoAnio + tiempoMes;
+    end
+    else begin
+      leerMaestro(arch, M);
+    end;
+  end;
+
+  if not encontrado then
+    writeln('Anio no encontrado');
+  close(arch);
 end;
 var
 	archTxt: Text;

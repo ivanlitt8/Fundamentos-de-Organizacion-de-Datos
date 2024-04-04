@@ -1,0 +1,30 @@
+101
+user@example.com
+Hola, este es un mensaje de prueba.
+101
+colleague@example.com
+Reunion maniana a las 10AM.
+102
+friend@example.com
+Hola! Como estas?
+102
+support@example.com
+Por favor, ayudame con este problema.
+103
+sales@example.com
+Nuevo catalogo disponible.
+105
+boss@example.com
+Adjunto encontraras el informe solicitado.
+105
+family@example.com
+Feliz cumpleanios!
+107
+customer@example.com
+Gracias por tu compra.
+109
+team@example.com
+Recordatorio: reunion de equipo.
+110
+client@example.com
+Confirmacion de la cita.

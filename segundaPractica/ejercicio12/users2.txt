@@ -1,0 +1,10 @@
+Usuario: user1 - Cantidad de mails: 7
+Usuario: user2 - Cantidad de mails: 5
+Usuario: user3 - Cantidad de mails: 3
+Usuario: user4 - Cantidad de mails: 0
+Usuario: user5 - Cantidad de mails: 9
+Usuario: user6 - Cantidad de mails: 1
+Usuario: user7 - Cantidad de mails: 5
+Usuario: user8 - Cantidad de mails: 0
+Usuario: user9 - Cantidad de mails: 7
+Usuario: user10 - Cantidad de mails: 10

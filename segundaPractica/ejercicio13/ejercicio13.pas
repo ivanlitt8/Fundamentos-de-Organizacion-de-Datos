@@ -17,6 +17,8 @@
 	NOTA: El archivo maestro y los archivos detalles sólo pueden recorrerse una vez.
 }
 
+// 	CONSULTAR ESTE EJERCICIO.
+
 program ejercicio13;
 const
 	valorAlto = 'ZZZZ';
@@ -29,7 +31,6 @@ type
 	maestro = record
 		destino: string[15];
 		fechaHora: fyh;
-		hora: string[6];
 		boletosDisp: integer;
 	end;
 	
@@ -63,11 +64,13 @@ begin
 	readln(txt,D.fechaHora.hs,D.fechaHora.min);
 	readln(txt,D.boletosComprados);
 
+{
 	writeln('Destino: ',D.destino);
 	writeln('Fecha: ',D.fechaHora.anio,'-',D.fechaHora.mes,'-',D.fechaHora.dia);
 	writeln('Hora viaje: ',D.fechaHora.hs,':',D.fechaHora.min);
 	writeln('Asientos comprados: ',D.boletosComprados);
 	writeln();
+}
 
 end;
 procedure generarMaestro(var txt: Text ; var arch: archivoMaestro);
@@ -94,37 +97,102 @@ begin
 	close(txt);
 	close(arch)
 end;
-procedure minimo(var D1,D2,Dmin: detalle ; var detUnoDat,detDosDat: archivoDetalle);
+procedure leerDetalleDat( var arch: archivoDetalle ; var D: detalle);
 begin
-	if(D1.destino < D2.destino)then begin
+	if not eof(arch) then
+		read(arch,D)
+	else
+		D.destino:= valorAlto;
+end;
+procedure compararFechas(D1, D2: detalle; var Daux: detalle);
+begin
+  if (D1.fechaHora.anio < D2.fechaHora.anio) or
+     ((D1.fechaHora.anio = D2.fechaHora.anio) and (D1.fechaHora.mes < D2.fechaHora.mes)) or
+     ((D1.fechaHora.anio = D2.fechaHora.anio) and (D1.fechaHora.mes = D2.fechaHora.mes) and (D1.fechaHora.dia < D2.fechaHora.dia)) or
+     ((D1.fechaHora.anio = D2.fechaHora.anio) and (D1.fechaHora.mes = D2.fechaHora.mes) and (D1.fechaHora.dia = D2.fechaHora.dia) and (D1.fechaHora.hs < D2.fechaHora.hs)) or
+     ((D1.fechaHora.anio = D2.fechaHora.anio) and (D1.fechaHora.mes = D2.fechaHora.mes) and (D1.fechaHora.dia = D2.fechaHora.dia) and (D1.fechaHora.hs = D2.fechaHora.hs) and (D1.fechaHora.min < D2.fechaHora.min)) then
+    Daux:= D1
+  else
+    Daux:= D2;
+end;
+procedure minimo(var D1,D2,Dmin: detalle ; var detUno,detDos: archivoDetalle);
+var
+	Daux: detalle;
+begin
+	compararFechas(D1,D2,Daux);
+	if(Daux.destino = D1.destino) then begin
 		Dmin:= D1;
-		leerDetalleDat(detUnoDat,D1);
+		leerDetalleDat(detUno,D1);
 	end
-	else if (D1.destino = D2.destino) then begin
-		//compararFecha y Hora
-	else begin
+	else if (Daux.destino = D2.destino) then begin
 		Dmin:= D2;
-		leerDetalleDat(detDosDat,D2);
+		leerDetalleDat(detDos,D2);
 	end;
 end;
 procedure actualizarMaestro(var archM: archivoMaestro ; var detUno,detDos: archivoDetalle);
 var
 	M: maestro;
-	D1,D2: detalle;
+	D1,D2,Dmin: detalle;
 begin
 	reset(archM);
 	reset(detUno);
 	reset(detDos);
-	read(archM,M);
-	minimo(D1,D2,Dmin);
+	leerDetalleDat(detUno, D1);
+    leerDetalleDat(detDos, D2);
+	minimo(D1,D2,Dmin,detUno,detDos);
 	while(Dmin.destino<>valorAlto) do begin
-	
-	
-	
+		read(archM,M);
+		while(Dmin.destino <> M.destino) do
+			read(archM,M);
+		while(Dmin.destino = M.destino) do begin
+			while(M.fechahora.anio <> Dmin.fechahora.anio) do
+				read(archM, M);
+			while(Dmin.destino = M.destino) and (Dmin.fechahora.anio = M.fechahora.anio) do begin
+				while(M.fechahora.mes <> Dmin.fechahora.mes) do
+					read(archM, M);
+				while(Dmin.destino = M.destino) and (Dmin.fechahora.anio = M.fechahora.anio) and (M.fechahora.mes = Dmin.fechahora.mes) do begin
+					while(M.fechahora.dia <> Dmin.fechahora.dia) do 
+						read(archM, M);
+					while(M.destino = Dmin.destino) and (M.fechahora.anio = Dmin.fechahora.anio) and (M.fechahora.mes = Dmin.fechahora.mes) and (M.fechahora.dia = Dmin.fechahora.dia) do begin 
+						while(M.fechahora.hs <> Dmin.fechahora.hs) do 
+							read(archM, M);
+						while(M.destino = Dmin.destino) and (M.fechahora.anio = Dmin.fechahora.anio) and (M.fechahora.mes = Dmin.fechahora.mes) and (M.fechahora.dia = Dmin.fechahora.dia) and (M.fechahora.hs = Dmin.fechahora.hs) do begin 
+							while(M.fechahora.min <> Dmin.fechahora.min) do
+								read(archM, M);
+							while(M.destino = Dmin.destino) and (M.fechahora.anio = Dmin.fechahora.anio) and (M.fechahora.mes = Dmin.fechahora.mes) and (M.fechahora.dia = Dmin.fechahora.dia) and (M.fechahora.hs = Dmin.fechahora.hs) and (M.fechahora.min = Dmin.fechahora.min) do begin 
+								M.boletosDisp:= M.boletosDisp - Dmin.boletosComprados;
+								minimo(D1,D2,Dmin,detUno,detDos);
+							end;
+							writeln('Mensaje de depuracion');
+							//if(infoMae.cant < cant) then
+							//writeln(txt, infoMae.destino, ' ', infoMae.fecha, ' ', infoMae.hora);
+							//seek(archM, filepos(archM)-1);
+							//write(archM, M);
+						end;
+					end;
+                end;
+				
+			end;
+		end;
 	end;
 	close(archM);
 	close(detUno);
 	close(detDos);
+end;
+procedure imprimirMaestro(var arch: archivoMaestro);
+var
+	M: maestro;
+begin
+	reset(arch);
+	while not eof(arch) do begin
+		read(arch,M);
+		writeln('Destino: ',M.destino);
+		writeln('Fecha: ',M.fechaHora.anio,'-',M.fechaHora.mes,'-',M.fechaHora.dia);
+		writeln('Hora viaje: ',M.fechaHora.hs,':',M.fechaHora.min);
+		writeln('Asientos disponibles: ',M.boletosDisp);
+		writeln();
+	end;
+	close(arch);
 end;
 var
 	archTxt,detUnoTxt,detDosTxt: Text;
@@ -149,5 +217,7 @@ begin
 	rewrite(detDosDat);
 	generarDetalle(detDosTxt,detDosDat);
 	
-	actualizarMaestro(archDat,detUnoDat,detUnoDat);
+	actualizarMaestro(archDat,detUnoDat,detDosDat);
+	writeln('------- Maestro Actualizado-------');
+	imprimirMaestro(archDat);
 end.

@@ -1,0 +1,30 @@
+1
+Suzuki GSX-R
+Una moto deportiva potente
+2023
+Suzuki
+5
+2
+Honda CB500X
+Una moto versatil para aventuras
+2022
+Honda
+8
+3
+Yamaha MT-07
+Una moto naked agil y divertida
+2024
+Yamaha
+3
+4
+Kawasaki Ninja 650
+Una moto deportiva comoda y potente
+2023
+Kawasaki
+6
+5
+BMW R1250GS
+Una moto de aventura premium
+2022
+BMW
+2

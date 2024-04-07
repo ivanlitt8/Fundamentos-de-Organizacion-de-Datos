@@ -1,0 +1,20 @@
+1
+Chubut
+101
+Trelew
+50 30 25 40 16
+1
+Chubut
+102
+Rawson
+40 20 20 35 10
+2
+Salta
+201
+Cafayate
+60 40 45 50 40
+2
+Salta
+202
+Tartagal
+70 50 60 60 40

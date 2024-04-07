@@ -1,0 +1,16 @@
+03 01 1
+Semanario A
+Descripcion del Semanario A
+10.50 50 20
+03 01 2
+Semanario B
+Descripcion del Semanario B
+9.75 30 10
+03 02 3
+Semanario C
+Descripcion del Semanario C
+11.20 20 8
+03 02 4
+Semanario D
+Descripcion del Semanario D
+80 40 15

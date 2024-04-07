@@ -9,36 +9,52 @@
 	
 	NOTA: Todos los archivos están ordenados por código de la moto y el archivo maestro debe
 	ser recorrido sólo una vez y en forma simultánea con los detalles.
-
 }
 
 program ejercicio16;
 const
-	valorAlto = 'ZZZZ';
-	dimF = 15;
+	valorAlto = 9999;
+	dimF = 3;
 type
+	rango = 1..dimF;
+
 	maestro = record
-		dto: string[15];
-		division: string[15];
-		idEmp: integer;
-		cat: integer;
-		horas: integer;
+		id: integer;
+		nombre: string[20];
+		desc: string[50];
+		modelo: integer;
+		marca: string[10];
+		stock: integer;
 	end;
 	
-	archivoMaestro = file of maestro;
-	vectValores = array [1..dimF] of real;
+	detalle = record
+		id: integer;
+		precio: real;
+		fecha: string[10];
+	end;
 		
-procedure leerMaestrotxt(var txt: Text ; var M: Maestro );
+	archivoMaestro = file of maestro;	
+	archivoDetalle = file of detalle;
+	
+	vectDetalles = array [rango] of archivoDetalle;
+	vectRegistro = array [rango] of  detalle;
+	vectStrings = array [rango] of  string;
+		
+procedure leerMaestroTxt(var txt: Text ; var M: Maestro );
 begin
-	readln(txt,M.dto);
-	readln(txt,M.division);
-	readln(txt,M.idEmp,M.cat,M.horas);
+	readln(txt,M.id);
+	readln(txt,M.nombre);
+	readln(txt,M.desc);
+	readln(txt,M.modelo);
+	readln(txt,M.marca);
+	readln(txt,M.stock);
 
-	writeln('Departamento: ',M.dto);
-	writeln('Division: ',M.division);
-	writeln('ID empleado: ',M.idEmp);
-	writeln('Categoria: ',M.cat);
-	writeln('Cantidad horas: ',M.horas);
+	writeln('ID Moto: ',M.id);
+	writeln('Nombre: ',M.nombre);
+	writeln('Descripcion: ',M.desc);
+	writeln('Modelo: ',M.modelo);
+	writeln('Marca: ',M.marca);
+	writeln('Stock: ',M.stock);
 	writeln();
 
 end;
@@ -48,105 +64,139 @@ var
 begin
 	reset(txt);
 	while not eof(txt) do begin
-		leerMaestrotxt(txt,M);
+		leerMaestroTxt(txt,M);
 		write(arch,M);
 	end;
 	close(txt);
-	close(arch)
+	close(arch);
 end;
+procedure leerDetalleTxt(var txt: Text ; var D: detalle );
+begin
+	readln(txt,D.id,D.precio);
+	readln(txt,D.fecha);
 
+	writeln('ID: ',D.id);
+	writeln('Precio: ', D.precio:0:2);
+	writeln('Fecha: ', D.fecha);
+	writeln();
+end;
+procedure cargarDetalle (var arch: archivoDetalle ; nombre : string );
+var
+	D: detalle;
+	txt: Text;
+begin
+	assign(txt,nombre+'.txt');
+	reset(txt);
+	assign(arch,nombre+'.dat');
+	rewrite(arch);
+	while not eof(txt) do begin
+		leerDetalleTxt(txt,D);
+		writeln('-----');
+		writeln();
+		write(arch,D)
+	end;
+	writeln('***************');
+	close(arch);
+	close(txt);
+end;
 procedure leerMaestro ( var arch: archivoMaestro; var M: maestro);
 begin
 	if not eof(arch) then
 		read(arch,M)
 	else
-		M.dto:= valorAlto;
+		M.id:= valorAlto;
 end;
-procedure reporte(var arch: archivoMaestro; V: vectValores);
+procedure generarDetalles(var V: vectDetalles);
+var
+	i: integer;
+	vNombres: vectStrings;
+begin
+	vNombres[1]:= 'detalleUno';
+	vNombres[2]:= 'detalleDos';
+	vNombres[3]:= 'detalleTres';
+	for i:=1 to dimF do
+		cargarDetalle(V[i],vNombres[i]);
+end;
+procedure leerDetalle(var arch: archivoDetalle; var D: detalle);
+begin
+	if not eof(arch) then
+		read(arch,D)
+	else
+		D.id:= valorAlto;
+end;
+procedure minimo(var V:vectDetalles ; var vectReg: vectRegistro ; var Dmin:detalle);
+var
+	pos,i: integer;
+begin
+	Dmin.id:= valorAlto;
+	for i:= 1 to dimF do 
+		if (vectReg[i].id < Dmin.id) then begin
+			Dmin:= vectReg[i];
+			pos:= i;
+		end;
+	if(Dmin.id <> valorAlto)then
+		leerDetalle(V[pos],vectReg[pos]);
+end;
+procedure actualizarMaestro (var V: vectDetalles; var archM: archivoMaestro);
+var
+	vectReg: vectRegistro;
+	i: rango;
+	Dmin: detalle;
+	M: maestro;
+begin
+	reset(archM);
+	for i:=1 to dimF do begin
+		reset(V[i]);
+		leerDetalle(V[i],vectReg[i]);
+	end;
+	minimo(V,vectReg,Dmin);
+	read(archM, M);
+	while(Dmin.id <> valorAlto) do begin
+		while(Dmin.id <> M.id) do
+			read(archM, M);
+		while(Dmin.id = M.id) do begin
+			M.stock:= M.stock - 1;
+			minimo(V,vectReg,Dmin);
+		end;
+		seek(archM, filepos(archM)-1);
+		write(archM,M);
+	end;
+	close(archM);
+	for i:=1 to dimF do begin
+		close(V[i]);
+	end;
+end;
+procedure imprimirMaestro( var arch: archivoMaestro);
 var
 	M: maestro;
-	divHoras,idAct,horas,dtoHoras: integer;
-	divMonto,monto,dtoMonto: real;
-	dtoAct,divAct: string;
 begin
 	reset(arch);
-	leerMaestro(arch,M);
-	while(M.dto<>valorAlto)do begin
-		dtoAct:= M.dto;
-		dtoHoras:= 0;
-		dtoMonto:= 0;
-		writeln('DEPARTAMENTO ',M.dto);
-		writeln();
-		while(dtoAct = M.dto)do begin
-			divAct:= M.division;
-			divHoras:= 0;
-			divMonto:= 0;
-			writeln('** Division ',divAct,':');
-			while(dtoAct = M.dto)and(divAct = M.division)do begin
-				idAct:= M.idEmp;
-				horas:= 0;
-				monto:= 0;
-				while(dtoAct = M.dto)and(divAct = M.division)and(M.idEmp = idAct)do begin
-					horas:= horas + M.horas;
-					monto:= monto + (V[M.cat] * M.horas);
-					leerMaestro(arch,M);
-				end;
-				writeln('Numero empleado ',idAct,' total hs ',horas,' importe a cobrar ',monto:0:2);
-				divHoras:= divHoras + horas;
-				divMonto:= divMonto + monto;
-			end;					
-			writeln(' --- Total de horas division ',divHoras);
-			writeln(' --- Total monto division ',divMonto:0:2);
-			writeln();	
-			dtoHoras:= dtoHoras + divHoras;
-			dtoMonto:= dtoMonto + divMonto;
-		end;
-		writeln('Total horas departamento: ',dtoHoras);
-		writeln('Monto total departamento: ',dtoMonto:0:2);
-		writeln('--------------------------------');
+	writeln('----- Maestro Actualizado -----');
+	while not eof(arch) do begin
+		read(arch,M);
+		writeln('ID Moto: ',M.id);
+		writeln('Nombre: ',M.nombre);
+		writeln('Descripcion: ',M.desc);
+		writeln('Modelo: ',M.modelo);
+		writeln('Marca: ',M.marca);
+		writeln('Stock: ',M.stock);
 		writeln();
 	end;
 	close(arch);
 end;
-{
-	Departamento
-	División
-	Número de Empleado 		Total de Hs. 		Importe a cobrar
-		........			  ....... 				........
-		........			  ....... 				........
-	
-	Total de horas división: ____
-	Monto total por división: ____
-
-	División
-	.................
-	Total horas departamento: ____
-	Monto total departamento: ____
-}
-procedure cargarVector(var V: vectValores ; var txt:Text);
 var
-	cat: integer;
-	valor: real;
-begin
-	reset(txt);
-	while not eof(txt) do begin
-		readln(txt,cat,valor);
-		V[cat]:= valor;
-		//writeln('categoria: ',cat);
-		//writeln('valor: ',valor:0:2);
-	end;
-	close(txt);
-end;
-var
-	archTxt,archVect: Text;
+	archTxt: Text;
 	archDat: archivoMaestro;
-	V: vectValores;
+	V: vectDetalles;
 begin
 	assign(archTxt,'maestro.txt');
 	assign(archDat,'maestro.dat');
 	rewrite(archDat);
 	generarMaestro(archTxt,archDat);
-	assign(archVect,'valoresCategoria.txt');
-	cargarVector(V,archVect);
-	reporte(archDat,V);
+	
+	generarDetalles(V);
+	
+	actualizarMaestro(V,archDat);
+	
+	imprimirMaestro(archDat);
 end.

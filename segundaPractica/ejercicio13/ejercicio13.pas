@@ -17,7 +17,7 @@
 	NOTA: El archivo maestro y los archivos detalles sólo pueden recorrerse una vez.
 }
 
-// 	CONSULTAR ESTE EJERCICIO.
+// CONSULTAR
 
 program ejercicio13;
 const
@@ -49,13 +49,11 @@ begin
 	readln(txt,M.fechaHora.anio,M.fechaHora.mes,M.fechaHora.dia);
 	readln(txt,M.fechaHora.hs,M.fechaHora.min);
 	readln(txt,M.boletosDisp);
-{
 	writeln('Destino: ',M.destino);
 	writeln('Fecha: ',M.fechaHora.anio,'-',M.fechaHora.mes,'-',M.fechaHora.dia);
 	writeln('Hora viaje: ',M.fechaHora.hs,':',M.fechaHora.min);
 	writeln('Asientos disponibles: ',M.boletosDisp);
 	writeln();
-}
 end;
 procedure leerDetalletxt(var txt: Text ; var D: detalle );
 begin
@@ -63,15 +61,11 @@ begin
 	readln(txt,D.fechaHora.anio,D.fechaHora.mes,D.fechaHora.dia);
 	readln(txt,D.fechaHora.hs,D.fechaHora.min);
 	readln(txt,D.boletosComprados);
-
-{
 	writeln('Destino: ',D.destino);
 	writeln('Fecha: ',D.fechaHora.anio,'-',D.fechaHora.mes,'-',D.fechaHora.dia);
 	writeln('Hora viaje: ',D.fechaHora.hs,':',D.fechaHora.min);
 	writeln('Asientos comprados: ',D.boletosComprados);
 	writeln();
-}
-
 end;
 procedure generarMaestro(var txt: Text ; var arch: archivoMaestro);
 var
@@ -122,18 +116,25 @@ begin
 	compararFechas(D1,D2,Daux);
 	if(Daux.destino = D1.destino) then begin
 		Dmin:= D1;
-		leerDetalleDat(detUno,D1);
+		leerDetalleDat(detUno,Dmin);
 	end
 	else if (Daux.destino = D2.destino) then begin
 		Dmin:= D2;
-		leerDetalleDat(detDos,D2);
+		leerDetalleDat(detDos,Dmin);
 	end;
 end;
+
 procedure actualizarMaestro(var archM: archivoMaestro ; var detUno,detDos: archivoDetalle);
 var
 	M: maestro;
 	D1,D2,Dmin: detalle;
+	//cantidad,asientosMin: integer;
+	//txt: Text;
 begin
+	//writeln('Ingrese cantidad de asientos minimos');
+    //readln(asientosMin);
+    //assign(txt,'listado.txt');
+    //rewrite(txt);
 	reset(archM);
 	reset(detUno);
 	reset(detDos);
@@ -159,19 +160,19 @@ begin
 						while(M.destino = Dmin.destino) and (M.fechahora.anio = Dmin.fechahora.anio) and (M.fechahora.mes = Dmin.fechahora.mes) and (M.fechahora.dia = Dmin.fechahora.dia) and (M.fechahora.hs = Dmin.fechahora.hs) do begin 
 							while(M.fechahora.min <> Dmin.fechahora.min) do
 								read(archM, M);
+							//cantidad:= 0;
 							while(M.destino = Dmin.destino) and (M.fechahora.anio = Dmin.fechahora.anio) and (M.fechahora.mes = Dmin.fechahora.mes) and (M.fechahora.dia = Dmin.fechahora.dia) and (M.fechahora.hs = Dmin.fechahora.hs) and (M.fechahora.min = Dmin.fechahora.min) do begin 
 								M.boletosDisp:= M.boletosDisp - Dmin.boletosComprados;
 								minimo(D1,D2,Dmin,detUno,detDos);
 							end;
-							writeln('Mensaje de depuracion');
-							//if(infoMae.cant < cant) then
-							//writeln(txt, infoMae.destino, ' ', infoMae.fecha, ' ', infoMae.hora);
-							//seek(archM, filepos(archM)-1);
-							//write(archM, M);
+							//if(M.boletosDisp < asientosMin) then
+								//writeln(txt, M.destino, ' ',M.fechahora.anio,'-',M.fechahora.mes,'-',M.fechahora.dia);
+							
+							seek(archM, filepos(archM)-1);
+							write(archM, M);
 						end;
 					end;
                 end;
-				
 			end;
 		end;
 	end;

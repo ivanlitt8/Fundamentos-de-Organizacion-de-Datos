@@ -29,33 +29,70 @@
 
 program ejercicio14;
 const
-	valorAlto = 'ZZZZ';
-	dimF = 15;
+	valorAlto = 9999;
+	dimF = 3;
 type
+	rango = 1..dimF;
 	maestro = record
-		dto: string[15];
-		division: string[15];
-		idEmp: integer;
-		cat: integer;
-		horas: integer;
+		idProv: integer;
+		prov: string[15];
+		idLoc: integer;
+		loc: string[15];
+		sinLuz: integer;
+		sinGas: integer;
+		sinAgua: integer;
+		sinSanit: integer;
+		conChapa: integer;
+	end;
+	
+	detalle = record
+		idProv: integer;
+		idLoc: integer;
+		conLuz: integer;
+		construidas: integer;
+		conAgua: integer;
+		conGas: integer;
+		entregaSanit: integer;
 	end;
 	
 	archivoMaestro = file of maestro;
-	vectValores = array [1..dimF] of real;
-		
-procedure leerMaestrotxt(var txt: Text ; var M: Maestro );
+	archivoDetalle = file of detalle;
+	
+	vectDetalles = array [rango] of archivoDetalle;
+	vectRegistro = array [rango] of  detalle;
+	vectStrings = array [rango] of  string;
+	
+procedure leerMaestroTxt(var txt: Text ; var M: maestro );
 begin
-	readln(txt,M.dto);
-	readln(txt,M.division);
-	readln(txt,M.idEmp,M.cat,M.horas);
+	readln(txt,M.idProv);
+	readln(txt,M.prov);
+	readln(txt,M.idLoc);
+	readln(txt,M.loc);
+	readln(txt,M.sinLuz,M.sinGas,M.sinAgua,M.sinSanit,M.conChapa);
 
-	writeln('Departamento: ',M.dto);
-	writeln('Division: ',M.division);
-	writeln('ID empleado: ',M.idEmp);
-	writeln('Categoria: ',M.cat);
-	writeln('Cantidad horas: ',M.horas);
+	writeln('ID Provincia: ', M.idProv);
+	writeln('Provincia: ', M.prov);
+	writeln('ID Localidad: ', M.idLoc);
+	writeln('Localidad: ', M.loc);
+	writeln('Viviendas sin luz: ', M.sinLuz);
+	writeln('Viviendas sin gas: ', M.sinGas);
+	writeln('Viviendas sin agua: ', M.sinAgua);
+	writeln('Viviendas sin sanitarios: ', M.sinSanit);
+	writeln('Viviendas de chapa: ', M.conChapa);
 	writeln();
+end;
+procedure leerDetalleTxt(var txt: Text ; var D: detalle );
+begin
+	readln(txt,D.idProv,D.idLoc,D.conLuz,D.construidas,D.conAgua,D.conGas,D.entregaSanit);
 
+	writeln('ID Provincia: ', D.idProv);
+	writeln('ID Localidad: ', D.idLoc);
+	writeln('Viviendas con luz: ', D.conLuz);
+	writeln('Viviendas construidas: ', D.construidas);
+	writeln('Viviendas con agua: ', D.conAgua);
+	writeln('Viviendas con gas: ', D.conGas);
+	writeln('Entregas de sanitarios: ', D.entregaSanit);
+	writeln();
 end;
 procedure generarMaestro(var txt: Text ; var arch: archivoMaestro);
 var
@@ -63,105 +100,138 @@ var
 begin
 	reset(txt);
 	while not eof(txt) do begin
-		leerMaestrotxt(txt,M);
+		leerMaestroTxt(txt,M);
 		write(arch,M);
 	end;
 	close(txt);
 	close(arch)
 end;
-
-procedure leerMaestro ( var arch: archivoMaestro; var M: maestro);
+procedure cargarDetalle (var arch: archivoDetalle ; nombre : string );
+var
+	D: detalle;
+	txt: Text;
+begin
+	assign(txt,nombre+'.txt');
+	reset(txt);
+	assign(arch,nombre+'.dat');
+	rewrite(arch);
+	while not eof(txt) do begin
+		leerDetalleTxt(txt,D);
+		writeln('-----');
+		writeln();
+		write(arch,D)
+	end;
+	writeln('***************');
+	close(arch);
+	close(txt);
+end;
+procedure generarDetalles ( var V: vectDetalles);
+var
+	i: integer;
+	vNombres: vectStrings;
+begin
+	vNombres[1]:= 'detalleUno';
+	vNombres[2]:= 'detalleDos';
+	vNombres[3]:= 'detalleTres';
+	for i:=1 to dimF do
+		cargarDetalle(V[i],vNombres[i]);
+end;
+procedure leerDetalle(var arch: archivoDetalle; var D: detalle);
 begin
 	if not eof(arch) then
-		read(arch,M)
+		read(arch,D)
 	else
-		M.dto:= valorAlto;
+		D.idProv:= valorAlto;
 end;
-procedure reporte(var arch: archivoMaestro; V: vectValores);
+procedure minimo(var V:vectDetalles ; var vectReg: vectRegistro ; var Dmin:detalle);
+var
+	pos,i: integer;
+begin
+	Dmin.idProv:= valorAlto;
+	for i:= 1 to dimF do 
+		if (vectReg[i].idProv < Dmin.idProv) or ((vectReg[i].idProv = Dmin.idProv) and (vectReg[i].idLoc < Dmin.idLoc)) then begin
+			Dmin:= vectReg[i];
+			pos:= i;
+		end;
+	if(Dmin.idProv <> valorAlto)then
+		leerDetalle(V[pos],vectReg[pos]);
+end;
+procedure actualizarMaestro (var V: vectDetalles; var archM: archivoMaestro);
+var
+	vectReg: vectRegistro;
+	i: rango;
+	Dmin: detalle;
+	M: maestro;
+	cantLocSinChapa: integer;
+begin
+	reset(archM);
+	for i:=1 to dimF do begin
+		reset(V[i]);
+		leerDetalle(V[i],vectReg[i]);
+	end;
+	minimo(V,vectReg,Dmin);
+	read(archM, M);
+	cantLocSinChapa:= 0;
+	while(Dmin.idProv<>valorAlto) do begin
+		while(Dmin.idProv<>M.idProv) do
+			read(archM, M);
+		while(Dmin.idProv = M.idProv) do begin
+			while(Dmin.idLoc<>M.idLoc) do
+				read(archM,M);
+			while(Dmin.idProv = M.idProv)and(Dmin.idLoc=M.idLoc) do begin
+				M.sinLuz:= M.sinLuz - Dmin.conLuz;
+				M.sinAgua:= M.sinAgua - Dmin.conAgua;
+				M.sinGas:= M.sinGas - Dmin.conGas;
+				M.sinSanit:= M.sinSanit - Dmin.entregaSanit;
+				M.conChapa:= M.conChapa - Dmin.construidas;
+				minimo(V,vectReg,Dmin);
+			end;
+			if(M.conChapa = 0) then
+				cantLocSinChapa:= cantLocSinChapa + 1;
+			seek(archM, filepos(archM)-1);
+			write(archM,M)
+		end;
+	end;
+	writeln('La cantidad de localidades sin viviendas de chapa es ', cantLocSinChapa);
+	close(archM);
+	for i:=1 to dimF do begin
+		close(V[i]);
+	end;
+end;
+procedure imprimirMaestro( var arch: archivoMaestro);
 var
 	M: maestro;
-	divHoras,idAct,horas,dtoHoras: integer;
-	divMonto,monto,dtoMonto: real;
-	dtoAct,divAct: string;
 begin
 	reset(arch);
-	leerMaestro(arch,M);
-	while(M.dto<>valorAlto)do begin
-		dtoAct:= M.dto;
-		dtoHoras:= 0;
-		dtoMonto:= 0;
-		writeln('DEPARTAMENTO ',M.dto);
-		writeln();
-		while(dtoAct = M.dto)do begin
-			divAct:= M.division;
-			divHoras:= 0;
-			divMonto:= 0;
-			writeln('** Division ',divAct,':');
-			while(dtoAct = M.dto)and(divAct = M.division)do begin
-				idAct:= M.idEmp;
-				horas:= 0;
-				monto:= 0;
-				while(dtoAct = M.dto)and(divAct = M.division)and(M.idEmp = idAct)do begin
-					horas:= horas + M.horas;
-					monto:= monto + (V[M.cat] * M.horas);
-					leerMaestro(arch,M);
-				end;
-				writeln('Numero empleado ',idAct,' total hs ',horas,' importe a cobrar ',monto:0:2);
-				divHoras:= divHoras + horas;
-				divMonto:= divMonto + monto;
-			end;					
-			writeln(' --- Total de horas division ',divHoras);
-			writeln(' --- Total monto division ',divMonto:0:2);
-			writeln();	
-			dtoHoras:= dtoHoras + divHoras;
-			dtoMonto:= dtoMonto + divMonto;
-		end;
-		writeln('Total horas departamento: ',dtoHoras);
-		writeln('Monto total departamento: ',dtoMonto:0:2);
-		writeln('--------------------------------');
+	writeln('----- Maestro Actualizado -----');
+	while not eof(arch) do begin
+		read(arch,M);
+		writeln('ID Provincia: ', M.idProv);
+		writeln('Provincia: ', M.prov);
+		writeln('ID Localidad: ', M.idLoc);
+		writeln('Localidad: ', M.loc);
+		writeln('Viviendas sin luz: ', M.sinLuz);
+		writeln('Viviendas sin gas: ', M.sinGas);
+		writeln('Viviendas sin agua: ', M.sinAgua);
+		writeln('Viviendas sin sanitarios: ', M.sinSanit);
+		writeln('Viviendas de chapa: ', M.conChapa);
 		writeln();
 	end;
 	close(arch);
 end;
-{
-	Departamento
-	División
-	Número de Empleado 		Total de Hs. 		Importe a cobrar
-		........			  ....... 				........
-		........			  ....... 				........
-	
-	Total de horas división: ____
-	Monto total por división: ____
-
-	División
-	.................
-	Total horas departamento: ____
-	Monto total departamento: ____
-}
-procedure cargarVector(var V: vectValores ; var txt:Text);
 var
-	cat: integer;
-	valor: real;
-begin
-	reset(txt);
-	while not eof(txt) do begin
-		readln(txt,cat,valor);
-		V[cat]:= valor;
-		//writeln('categoria: ',cat);
-		//writeln('valor: ',valor:0:2);
-	end;
-	close(txt);
-end;
-var
-	archTxt,archVect: Text;
+	archTxt: Text;
+	V: vectDetalles;
 	archDat: archivoMaestro;
-	V: vectValores;
 begin
 	assign(archTxt,'maestro.txt');
 	assign(archDat,'maestro.dat');
 	rewrite(archDat);
 	generarMaestro(archTxt,archDat);
-	assign(archVect,'valoresCategoria.txt');
-	cargarVector(V,archVect);
-	reporte(archDat,V);
+	
+	generarDetalles(V);
+	
+	actualizarMaestro(V,archDat);
+	
+	imprimirMaestro(archDat);
 end.

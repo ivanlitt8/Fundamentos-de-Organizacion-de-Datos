@@ -143,6 +143,8 @@ var
 	i: rango;
 	Dmin: detalle;
 	M: maestro;
+	modMaxVentas: string;
+	ventas,max: integer;
 begin
 	reset(archM);
 	for i:=1 to dimF do begin
@@ -151,12 +153,20 @@ begin
 	end;
 	minimo(V,vectReg,Dmin);
 	read(archM, M);
+	modMaxVentas:= '';
+	max:= 0;
 	while(Dmin.id <> valorAlto) do begin
 		while(Dmin.id <> M.id) do
 			read(archM, M);
+		ventas:= 0;
 		while(Dmin.id = M.id) do begin
 			M.stock:= M.stock - 1;
+			ventas:= ventas + 1;
 			minimo(V,vectReg,Dmin);
+		end;
+		if (ventas>max) then begin
+			max:= ventas;
+			modMaxVentas:= M.nombre;
 		end;
 		seek(archM, filepos(archM)-1);
 		write(archM,M);
@@ -165,6 +175,7 @@ begin
 	for i:=1 to dimF do begin
 		close(V[i]);
 	end;
+	writeln('El modelo de moto mas vendida fue ', modMaxVentas ,' con ',max,' unidades.');
 end;
 procedure imprimirMaestro( var arch: archivoMaestro);
 var

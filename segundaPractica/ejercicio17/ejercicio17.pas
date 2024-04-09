@@ -51,30 +51,37 @@
 program ejercicio17;
 const
 	valorAlto = 'ZZZZ';
-	dimF = 15;
 type
+	str = string[10];
 	maestro = record
-		dto: string[15];
-		division: string[15];
-		idEmp: integer;
-		cat: integer;
-		horas: integer;
+		idLoc: integer;
+		idMuni: integer;
+		idHospi: integer;
+		casos: integer;
+		localidad: str;
+		municipio: str;
+		hospital: str;
+		fecha: str;
 	end;
 	
 	archivoMaestro = file of maestro;
-	vectValores = array [1..dimF] of real;
 		
-procedure leerMaestrotxt(var txt: Text ; var M: Maestro );
+procedure leerMaestroTxt(var txt: Text ; var M: Maestro );
 begin
-	readln(txt,M.dto);
-	readln(txt,M.division);
-	readln(txt,M.idEmp,M.cat,M.horas);
+	readln(txt,M.idLoc,M.idMuni,M.idHospi,M.casos);
+	readln(txt,M.localidad);
+	readln(txt,M.municipio);
+	readln(txt,M.hospital);
+	readln(txt,M.fecha);
 
-	writeln('Departamento: ',M.dto);
-	writeln('Division: ',M.division);
-	writeln('ID empleado: ',M.idEmp);
-	writeln('Categoria: ',M.cat);
-	writeln('Cantidad horas: ',M.horas);
+	writeln('Fecha: ',M.fecha);
+	writeln('ID Localidad: ',M.idLoc);
+	writeln('Localidad: ',M.localidad);
+	writeln('ID Municipio: ',M.idLoc);
+	writeln('Municipio: ',M.municipio);
+	writeln('ID Hospital: ',M.idHospi);
+	writeln('Hospital: ',M.hospital);
+	writeln('Casos: ',M.casos);
 	writeln();
 
 end;
@@ -84,105 +91,76 @@ var
 begin
 	reset(txt);
 	while not eof(txt) do begin
-		leerMaestrotxt(txt,M);
+		leerMaestroTxt(txt,M);
 		write(arch,M);
 	end;
 	close(txt);
 	close(arch)
 end;
-
 procedure leerMaestro ( var arch: archivoMaestro; var M: maestro);
 begin
 	if not eof(arch) then
 		read(arch,M)
 	else
-		M.dto:= valorAlto;
+		M.localidad:= valorAlto;
 end;
-procedure reporte(var arch: archivoMaestro; V: vectValores);
+procedure reporte(var arch: archivoMaestro);
 var
 	M: maestro;
-	divHoras,idAct,horas,dtoHoras: integer;
-	divMonto,monto,dtoMonto: real;
-	dtoAct,divAct: string;
+	casosProvincia,casosLocalidad,casosMunicipio,casosHospital: integer;
+	locAct,munAct,hospAct: string;
+	txt: Text;
 begin
+	assign(txt, 'municipios.txt');
+    rewrite(txt);
 	reset(arch);
 	leerMaestro(arch,M);
-	while(M.dto<>valorAlto)do begin
-		dtoAct:= M.dto;
-		dtoHoras:= 0;
-		dtoMonto:= 0;
-		writeln('DEPARTAMENTO ',M.dto);
-		writeln();
-		while(dtoAct = M.dto)do begin
-			divAct:= M.division;
-			divHoras:= 0;
-			divMonto:= 0;
-			writeln('** Division ',divAct,':');
-			while(dtoAct = M.dto)and(divAct = M.division)do begin
-				idAct:= M.idEmp;
-				horas:= 0;
-				monto:= 0;
-				while(dtoAct = M.dto)and(divAct = M.division)and(M.idEmp = idAct)do begin
-					horas:= horas + M.horas;
-					monto:= monto + (V[M.cat] * M.horas);
+	casosProvincia:= 0;
+	while(M.localidad<>valorAlto)do begin
+		locAct:= M.localidad;
+		casosLocalidad:= 0;
+		writeln('Nombre: ',locAct);
+		while(locAct = M.localidad) do begin
+			munAct:= M.municipio;
+			casosMunicipio:= 0;
+			writeln('	Nombre: ',munAct);
+			while(locAct = M.localidad) and (munAct = M.municipio) do begin
+				hospAct:= M.hospital;
+				casosHospital:= 0;
+				write('		Nombre: ',hospAct,' ');
+				while (locAct = M.localidad)and(munAct = M.municipio)and(hospAct = M.hospital) do begin
+					casosHospital:= casosHospital + M.casos;
 					leerMaestro(arch,M);
 				end;
-				writeln('Numero empleado ',idAct,' total hs ',horas,' importe a cobrar ',monto:0:2);
-				divHoras:= divHoras + horas;
-				divMonto:= divMonto + monto;
-			end;					
-			writeln(' --- Total de horas division ',divHoras);
-			writeln(' --- Total monto division ',divMonto:0:2);
-			writeln();	
-			dtoHoras:= dtoHoras + divHoras;
-			dtoMonto:= dtoMonto + divMonto;
+				writeln('.......Cantidad de casos Hospital: ',casosHospital);
+				casosMunicipio:= casosMunicipio + casosHospital;			
+			end;
+			writeln('	Cantidad de casos Municipio: ',casosMunicipio);
+			casosLocalidad:= casosLocalidad + casosMunicipio;
+			if(casosMunicipio>1500) then begin
+				writeln(txt, locAct);
+                writeln(txt, casosMunicipio);
+                writeln(txt, munAct);
+            end;
 		end;
-		writeln('Total horas departamento: ',dtoHoras);
-		writeln('Monto total departamento: ',dtoMonto:0:2);
-		writeln('--------------------------------');
+		writeln('Cantidad de casos Localidad: ',casosLocalidad);
 		writeln();
+		casosProvincia:= casosProvincia + casosLocalidad;
 	end;
+	writeln('Cantidad de casos Totales en la Provincia: ',casosProvincia);
 	close(arch);
-end;
-{
-	Departamento
-	División
-	Número de Empleado 		Total de Hs. 		Importe a cobrar
-		........			  ....... 				........
-		........			  ....... 				........
-	
-	Total de horas división: ____
-	Monto total por división: ____
-
-	División
-	.................
-	Total horas departamento: ____
-	Monto total departamento: ____
-}
-procedure cargarVector(var V: vectValores ; var txt:Text);
-var
-	cat: integer;
-	valor: real;
-begin
-	reset(txt);
-	while not eof(txt) do begin
-		readln(txt,cat,valor);
-		V[cat]:= valor;
-		//writeln('categoria: ',cat);
-		//writeln('valor: ',valor:0:2);
-	end;
 	close(txt);
+	writeln('-------------------------------------------');
+	writeln('Municipios con mas de 1500 casos exportados en achivo municipios.txt');
 end;
 var
-	archTxt,archVect: Text;
+	archTxt: Text;
 	archDat: archivoMaestro;
-	V: vectValores;
 begin
 	assign(archTxt,'maestro.txt');
 	assign(archDat,'maestro.dat');
 	rewrite(archDat);
 	generarMaestro(archTxt,archDat);
-	assign(archVect,'valoresCategoria.txt');
-	cargarVector(V,archVect);
-	reporte(archDat,V);
+
+	reporte(archDat);
 end.

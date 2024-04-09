@@ -1,0 +1,6 @@
+LocalidadA
+15
+MunicipioX
+LocalidadB
+35
+MunicipioZ

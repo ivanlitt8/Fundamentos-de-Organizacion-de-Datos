@@ -28,136 +28,127 @@ const
 	valorAlto = 'ZZZZ';
 	dimF = 15;
 type
+	fallecido = record
+		nroPartida: integer;
+		dni: integer;
+		nombreApellido: string[50];
+		matMed: integer;
+		fechaDeceso: string[10];
+		horaDeceso: string[5];
+		lugarDeceso: string[15];
+	end;
+	
+	nacido = record
+		nroPartida: integer;
+		nombreApellido: string[50];
+		direccion: string[50];
+		matMed: integer;
+		nombreApellidoMadre: string[50];
+		dniMadre: integer;
+		nombreApellidoPadre: string[50];
+		dniPadre: integer;
+	end;
+	
 	maestro = record
-		dto: string[15];
-		division: string[15];
-		idEmp: integer;
-		cat: integer;
-		horas: integer;
+		nroPartida: integer;
+		nombreApellido: string[50];
+		direccion: string[50];
+		matMed: integer;
+		nombreApellidoMadre: string[50];
+		dniMadre: integer;
+		nombreApellidoPadre: string[50];
+		dniPadre: integer;
+		fallecido: boolean; // Indica si la persona está fallecida
+		matMedDeceso: string[10]; // Matrícula del médico que firmó el deceso
+		fechaDeceso: string[10];
+		horaDeceso: string[5];
+		lugarDeceso: string[15];
 	end;
 	
 	archivoMaestro = file of maestro;
-	vectValores = array [1..dimF] of real;
+	archivoFallec = file of fallecido;
+	archivoNac = file of nacido;
 		
-procedure leerMaestrotxt(var txt: Text ; var M: Maestro );
+procedure leerFallecTxt(var txt: Text ; var F: fallecido );
 begin
-	readln(txt,M.dto);
-	readln(txt,M.division);
-	readln(txt,M.idEmp,M.cat,M.horas);
+	readln(txt,F.nroPartida,F.dni);
+	readln(txt,F.nombreApellido);
+	readln(txt,F.matMed);
+	readln(txt,F.fechaDeceso);
+	readln(txt,F.horaDeceso);
+	readln(txt,F.lugarDeceso);
 
-	writeln('Departamento: ',M.dto);
-	writeln('Division: ',M.division);
-	writeln('ID empleado: ',M.idEmp);
-	writeln('Categoria: ',M.cat);
-	writeln('Cantidad horas: ',M.horas);
+	writeln('Numero de partida de nacimiento: ', F.nroPartida);
+	writeln('DNI: ', F.dni);
+	writeln('Nombre y apellido: ', F.nombreApellido);
+	writeln('Matricula del medico: ', F.matMed);
+	writeln('Fecha de deceso: ', F.fechaDeceso);
+	writeln('Hora de deceso: ', F.horaDeceso);
+	writeln('Lugar de deceso: ', F.lugarDeceso);
 	writeln();
-
 end;
-procedure generarMaestro(var txt: Text ; var arch: archivoMaestro);
+procedure leerNacTxt(var txt: Text ; var N: nacido );
+begin
+	readln(txt,N.nroPartida);
+	readln(txt,N.nombreApellido);
+	readln(txt,N.direccion);
+	readln(txt,N.matMed);
+	readln(txt,N.nombreApellidoMadre);
+	readln(txt,N.dniMadre);
+	readln(txt,N.nombreApellidoPadre);
+	readln(txt,N.dniPadre);
+
+	writeln('Numero de partida de nacimiento: ', N.nroPartida);
+	writeln('Nombre y apellido: ', N.nombreApellido);
+	writeln('Direccion: ', N.direccion);
+	writeln('Matricula del medico: ', N.matMed);
+	writeln('Nombre y apellido de la madre: ', N.nombreApellidoMadre);
+	writeln('DNI de la madre: ', N.dniMadre);
+	writeln('Nombre y apellido del padre: ', N.nombreApellidoPadre);
+	writeln('DNI del padre: ', N.dniPadre);
+	writeln();
+end;
+procedure generarDetalleN (var txt: Text; var arch:archivoNac);
 var
-	M: maestro;
+	N: nacido;
 begin
 	reset(txt);
 	while not eof(txt) do begin
-		leerMaestrotxt(txt,M);
-		write(arch,M);
+		leerNacTxt(txt,N);
+		write(arch,N);
 	end;
 	close(txt);
-	close(arch)
-end;
-
-procedure leerMaestro ( var arch: archivoMaestro; var M: maestro);
-begin
-	if not eof(arch) then
-		read(arch,M)
-	else
-		M.dto:= valorAlto;
-end;
-procedure reporte(var arch: archivoMaestro; V: vectValores);
-var
-	M: maestro;
-	divHoras,idAct,horas,dtoHoras: integer;
-	divMonto,monto,dtoMonto: real;
-	dtoAct,divAct: string;
-begin
-	reset(arch);
-	leerMaestro(arch,M);
-	while(M.dto<>valorAlto)do begin
-		dtoAct:= M.dto;
-		dtoHoras:= 0;
-		dtoMonto:= 0;
-		writeln('DEPARTAMENTO ',M.dto);
-		writeln();
-		while(dtoAct = M.dto)do begin
-			divAct:= M.division;
-			divHoras:= 0;
-			divMonto:= 0;
-			writeln('** Division ',divAct,':');
-			while(dtoAct = M.dto)and(divAct = M.division)do begin
-				idAct:= M.idEmp;
-				horas:= 0;
-				monto:= 0;
-				while(dtoAct = M.dto)and(divAct = M.division)and(M.idEmp = idAct)do begin
-					horas:= horas + M.horas;
-					monto:= monto + (V[M.cat] * M.horas);
-					leerMaestro(arch,M);
-				end;
-				writeln('Numero empleado ',idAct,' total hs ',horas,' importe a cobrar ',monto:0:2);
-				divHoras:= divHoras + horas;
-				divMonto:= divMonto + monto;
-			end;					
-			writeln(' --- Total de horas division ',divHoras);
-			writeln(' --- Total monto division ',divMonto:0:2);
-			writeln();	
-			dtoHoras:= dtoHoras + divHoras;
-			dtoMonto:= dtoMonto + divMonto;
-		end;
-		writeln('Total horas departamento: ',dtoHoras);
-		writeln('Monto total departamento: ',dtoMonto:0:2);
-		writeln('--------------------------------');
-		writeln();
-	end;
 	close(arch);
 end;
-{
-	Departamento
-	División
-	Número de Empleado 		Total de Hs. 		Importe a cobrar
-		........			  ....... 				........
-		........			  ....... 				........
-	
-	Total de horas división: ____
-	Monto total por división: ____
-
-	División
-	.................
-	Total horas departamento: ____
-	Monto total departamento: ____
-}
-procedure cargarVector(var V: vectValores ; var txt:Text);
+procedure generarDetalleF (var txt: Text; var arch:archivoFallec);
 var
-	cat: integer;
-	valor: real;
+	F: fallecido;
 begin
 	reset(txt);
 	while not eof(txt) do begin
-		readln(txt,cat,valor);
-		V[cat]:= valor;
-		//writeln('categoria: ',cat);
-		//writeln('valor: ',valor:0:2);
+		leerFallecTxt(txt,F);
+		write(arch,F);
 	end;
 	close(txt);
+	close(arch);
 end;
 var
-	archTxt,archVect: Text;
+	txtNac,txtFallec: Text;
+	datFallec: archivoFallec;
+	datNac: archivoNac;
 	archDat: archivoMaestro;
-	V: vectValores;
 begin
-	assign(archTxt,'maestro.txt');
+	assign(txtNac,'nacidos.txt');
+	assign(datNac,'nacidos.dat');
+	rewrite(datNac);
+	generarDetalleN(txtNac,datNac);
+	
+	assign(txtFallec,'fallecidos.txt');
+	assign(datFallec,'fallecidos.dat');
+	rewrite(datFallec);
+	generarDetalleF(txtFallec,datFallec);
+	
 	assign(archDat,'maestro.dat');
 	rewrite(archDat);
-	generarMaestro(archTxt,archDat);
-	assign(archVect,'valoresCategoria.txt');
-	cargarVector(V,archVect);
-	reporte(archDat,V);
+	generarMaestro(datNac,datFallec,archDat);
 end.

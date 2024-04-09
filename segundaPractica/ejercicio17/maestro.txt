@@ -1,0 +1,30 @@
+101 201 301 10
+LocalidadA
+MunicipioX
+Hospital1
+2024-04-01
+101 201 302 5
+LocalidadA
+MunicipioX
+Hospital2
+2024-04-01
+101 202 303 8
+LocalidadA
+MunicipioY
+Hospital3
+2024-04-01
+102 203 304 15
+LocalidadB
+MunicipioZ
+Hospital4
+2024-04-01
+102 203 305 20
+LocalidadB
+MunicipioZ
+Hospital5
+2024-04-01
+102 204 306 12
+LocalidadB
+MunicipioW
+Hospital6
+2024-04-01

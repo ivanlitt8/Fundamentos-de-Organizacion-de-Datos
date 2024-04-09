@@ -1,0 +1,34 @@
+7890 1679
+Juan Perez
+3210
+2024-04-01
+10:30
+Ciudad de Buenos Aires
+
+8901 2789
+Maria Gonzalez
+8099
+2024-04-02
+11:45
+La Plata
+
+9012 3491
+Carlos Rodriguez
+3218
+2024-04-03
+09:15
+Mar del Plata
+
+0123 4012
+Ana Martinez
+6587
+2024-04-04
+08:00
+Bahia Blanca
+
+1234 6123
+Javier Lopez
+5876
+2024-04-05
+16:20
+Rosario

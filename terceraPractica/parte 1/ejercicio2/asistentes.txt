@@ -1,0 +1,24 @@
+id: 500
+apellido: *Litt
+nombre: Ivan
+dni: 852
+telefono: 258
+------------
+id: 1200
+apellido: Bordoni
+nombre: Martina
+dni: 745
+telefono: 547
+------------
+id: 1600
+apellido: Bortot
+nombre: Coty
+dni: 663
+telefono: 366
+------------
+id: 800
+apellido: *Boty
+nombre: Cloud
+dni: 9465
+telefono: 6549
+------------

@@ -36,8 +36,13 @@ type
 	
 	detalle = record
 		destino: string[15];
-		fechaHora: fyh;
+		fechaHora: string;
 		boletosComprados: integer;
+		
+		A < B true 
+		
+		14 de marzo 20 de febrero
+		20220306 20210405
 	end;
 	
 	archivoMaestro = file of maestro;

@@ -132,6 +132,42 @@ begin
 	close(txt);
 	close(arch);
 end;
+procedure generarMaestro(var archN: detalleNacidos ; var archF:detalleNacidos; var archM: detalleMaestro);
+begin
+	reset(archN);
+	reset(archF);
+	reset(archM);
+	leerFallec(archF);
+	leerNac(archN);
+	minimoFall(minF);
+    minimoNac(minN);
+    while(minN.nroPartida <> valoralto) do begin
+		M.nroPartida:= minN.nroPartida;
+        M.nombreApellido:= minN.nombreApellido; 
+        M.direccion:= minN.direccion;
+        M.matMed:= minN.matMed;
+        M.nombreApellidoMadre:= minN.nombreApellidoMadre;
+        M.dniMadre:= minN.dniMadre;
+        M.nombreApellidoPadre:= minN.nombreApellidoPadre;
+        M.dniPadre:= minN.dniPadre;
+        if(minN.nroPartida = minF.nroPartida) then begin
+			M.fallecido:= true;
+            M.matMedDeceso:= minF.matMedDeceso;
+            M.fechaDeceso:= minF.fechaDeceso;
+            M.horaDeceso:= minF.horaDeceso;
+            M.lugarDeceso:= minF.lugarDeceso;
+        end
+        else
+			M.fallecido:= false;
+        write(archM, M);
+        minimoNac(vecDetNac, vecRegNac, minNacido);
+        if(M.fallecido) then
+			minimoFall(minFallecido);
+    end;
+	close(archN);
+	close(archF);
+	close(archM);
+end;
 var
 	txtNac,txtFallec: Text;
 	datFallec: archivoFallec;
@@ -150,5 +186,5 @@ begin
 	
 	assign(archDat,'maestro.dat');
 	rewrite(archDat);
-	generarMaestro(datNac,datFallec,archDat);
+	//generarMaestro(datNac,datFallec,archDat);
 end.

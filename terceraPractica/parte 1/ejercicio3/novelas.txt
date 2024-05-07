@@ -1,0 +1,21 @@
+id: 32
+genero: Accion
+nombre: primerNovela
+duracion: 120
+director: Novelin
+precio:  1.2000000000000000E+002
+------------
+id: 85
+genero: Drama
+nombre: segundaNovela
+duracion: 100
+director: Secundo
+precio:  2.0000000000000000E+002
+------------
+id: 8
+genero: Tercerum
+nombre: tercero
+duracion: 300
+director: Tercerin
+precio:  3.0000000000000000E+001
+------------

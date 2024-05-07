@@ -138,6 +138,7 @@ var
 begin
 	Dmin.id:= valorAlto;
 	for i:= 1 to dimF do 
+	///comparar por id
 		if (vectReg[i].fecha.mes < Dmin.fecha.mes) or ((vectReg[i].fecha.mes = Dmin.fecha.mes) and 
 			(vectReg[i].fecha.dia < Dmin.fecha.dia)) or ((vectReg[i].fecha.mes = Dmin.fecha.mes) and 
 			(vectReg[i].fecha.dia = Dmin.fecha.dia) and (vectReg[i].id = Dmin.id)) then begin
@@ -226,7 +227,7 @@ begin
 		close(V[i]);
 	end;
 end;
-{
+
 procedure imprimirMaestro( var arch: archivoMaestro);
 var
 	M: maestro;
@@ -235,20 +236,18 @@ begin
 	writeln('----- Maestro Actualizado -----');
 	while not eof(arch) do begin
 		read(arch,M);
-		writeln('ID Provincia: ', M.idProv);
-		writeln('Provincia: ', M.prov);
-		writeln('ID Localidad: ', M.idLoc);
-		writeln('Localidad: ', M.loc);
-		writeln('Viviendas sin luz: ', M.sinLuz);
-		writeln('Viviendas sin gas: ', M.sinGas);
-		writeln('Viviendas sin agua: ', M.sinAgua);
-		writeln('Viviendas sin sanitarios: ', M.sinSanit);
-		writeln('Viviendas de chapa: ', M.conChapa);
+		writeln('Fecha: ',M.fecha.mes,'-',M.fecha.dia);
+		writeln('Codigo: ', M.id);
+		writeln('Nombre: ', M.nombre);
+		writeln('Descripcion: ', M.desc);
+		writeln('Precio: ', M.precio:0:2);
+		writeln('Stock: ', M.stock);
+		writeln('Vendidos: ', M.vendidos);
 		writeln();
 	end;
 	close(arch);
 end;
-}
+
 var
 	archTxt: Text;
 	V: vectDetalles;
@@ -261,7 +260,7 @@ begin
 	
 	generarDetalles(V);
 	
-	//actualizarMaestro(V,archDat);
+	actualizarMaestro(V,archDat);
 	
-	//imprimirMaestro(archDat);
+	imprimirMaestro(archDat);
 end.

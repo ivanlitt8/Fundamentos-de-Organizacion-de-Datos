@@ -50,7 +50,6 @@ Type
     duracion: integer;
     director: str;
     precio: real;
-    enlace: integer;
   End;
 
   archivo_novelas = file Of novela;
@@ -74,13 +73,109 @@ End;
 Procedure agregarNovela(Var archivo: archivo_novelas);
 
 Var 
-  N: novela;
+  N, cabecera: novela;
 Begin
   reset(archivo);
-  leernovela(N);
-  seek(archivo, FileSize(archivo));
-  write(archivo, N);
+  read(archivo, cabecera);
+  leerNovela(N);
+  If (cabecera.id <> 0) Then
+    Begin
+      seek(archivo, -cabecera.id);
+      // Me paro en la pos recuperable
+      read(archivo, cabecera);
+      // Leo el registro y lo asigno a cabecera
+      seek(archivo, filepos(archivo)-1);
+      // Retrocedo por la lectura
+      write(archivo, N);
+      // Escribo el nuevo archivo en la posicion
+      seek(archivo, 0);
+      // Vuelvo a la posicion 0
+      write(archivo, cabecera);
+      // actualizo la cabecera
+    End
+  Else
+    Begin
+      seek(archivo, filesize(archivo));
+      //Voy a la ult posicion
+      write(archivo, N);
+      // Cargo el nuevo registro
+    End;
   close(archivo);
+End;
+
+Procedure modificarNovela(Var archivo: archivo_novelas);
+
+Var 
+  id: integer;
+  encontrado: Boolean;
+  N: novela;
+Begin
+  Write('Ingrese id de la novela a modificar: ');
+  ReadLn(id);
+  encontrado := false;
+  Reset(archivo);
+  While (Not eof(archivo)) And (Not encontrado) Do
+    Begin
+      read(archivo,N);
+      If (N.id = id) Then
+        Begin
+          encontrado := true;
+          writeln('-- novela encontrada --');
+          writeln('* Codigo: ', N.id);
+          writeln('* Genero: ', N.genero);
+          writeln('* Nombre: ', N.nombre);
+          writeln('* Duracion: ', N.duracion);
+          writeln('* Director: ', N.director);
+          writeln('* Precio: ', N.precio:0:2);
+
+          write('Ingrese nuevo genero de novela: ');
+          readln(N.genero);
+          write('Ingrese nuevo nombre de novela: ');
+          readln(N.nombre);
+          write('Ingrese nueva duracion de novela: ');
+          readln(N.duracion);
+          write('Ingrese nuevo nombre director: ');
+          readln(N.director);
+          write('Ingrese nuevo precio de entrada: ');
+          readln(N.precio);
+          seek(archivo, FilePos(archivo)-1);
+          write(archivo, N);
+        End;
+    End;
+  If Not encontrado Then
+    writeln('La novela con codigo ', id, ' no se encontró en el archivo.');
+  Close(archivo);
+End;
+
+Procedure eliminarNovela(Var archivo: archivo_novelas);
+
+Var 
+  id: Integer;
+  cabecera, N: novela;
+  encontrado: Boolean;
+Begin
+  Write('Ingrese codigo de la novela a eliminar: ');
+  ReadLn(id);
+  encontrado := false;
+  Reset(archivo);
+  Read(archivo,cabecera);
+  While (Not eof(archivo)) And (Not encontrado) Do
+    Begin
+      read(archivo, N);
+      If (N.id = id) Then
+        Begin
+          encontrado := true;
+          seek(archivo, filepos(archivo)-1);
+          write(archivo, cabecera);
+          cabecera.id := -(filepos(archivo)-1);
+          seek(archivo, 0);
+          write(archivo, cabecera);
+          writeln('Novela eliminada exitosamente.');
+        End;
+    End;
+  If Not encontrado Then
+    writeln('La novela con ID ', id, ' no se encontró en el archivo.');
+  Close(archivo);
 End;
 
 Procedure imprimirArchivo(Var archivo: archivo_novelas);
@@ -127,43 +222,42 @@ Begin
   close(arch);
   writeln('Contenido exportado a "novelas.txt".');
 End;
-Procedure crearArchivo();
+Procedure crearArchivo( Var archivo: archivo_novelas);
 
 Var 
-  archivo: archivo_novelas;
   N: novela;
   nombre: string;
   id: integer;
 Begin
-  write('Nombre del archivo');
+  write('Nombre del archivo: ');
   readln(nombre);
   assign(archivo, nombre);
   rewrite(archivo);
   N.id := 0;
-  // Indica que no hay espacio libre
-  N.enlace := 0;
-  // No hay más registros después del primero
+  N.genero := '';
+  N.nombre := '';
+  N.duracion := 0;
+  N.director := '';
+  N.precio := 0.0;
+  write(archivo,N);
   Repeat
-    writeln('Ingrese el codigo de la novela (0 para salir): ');
-    readln(codigo);
-    If codigo <> 0 Then
+    write('Ingrese el codigo de la novela: ');
+    readln(N.id);
+    If (N.id <> 0) Then
       Begin
-        nuevaNovela.codigo := codigo;
-        writeln('Ingrese el genero: ');
-        readln(nuevaNovela.genero);
-        writeln('Ingrese el nombre: ');
-        readln(nuevaNovela.nombre);
-        writeln('Ingrese la duracion en minutos: ');
-        readln(nuevaNovela.duracion);
-        writeln('Ingrese el director: ');
-        readln(nuevaNovela.director);
-        writeln('Ingrese el precio: ');
-        readln(nuevaNovela.precio);
-
-        // Escribimos la nueva novela en el archivo
-        Write(archivo, nuevaNovela);
+        write('Ingrese el genero: ');
+        readln(N.genero);
+        write('Ingrese el nombre: ');
+        readln(N.nombre);
+        write('Ingrese la duracion en minutos: ');
+        readln(N.duracion);
+        write('Ingrese el director: ');
+        readln(N.director);
+        write('Ingrese el precio: ');
+        readln(N.precio);
+        write(archivo, N);
       End;
-  Until codigo = 0;
+  Until (N.id = 0);
   close(archivo);
   writeln('Archivo '+nombre+' generado');
 End;
@@ -175,19 +269,23 @@ Begin
   Repeat
     writeln('Seleccione una opcion:');
     writeln('1. Crear archivo de novelas');
-    writeln('3. Imprimir lista de novelas');
-    writeln('4. Exportar novelas');
-    writeln('5. Realizar baja logica');
-    writeln('6. Salir');
+    writeln('2. Imprimir lista de novelas');
+    writeln('3. Eliminar novela');
+    writeln('4. Modificar novela');
+    writeln('5. Agregar novela');
+    writeln('6. Exportar novelas');
+    writeln('7. Salir');
     readln(opcion);
     Case opcion Of 
       '1': crearArchivo(novelas);
-      '3': imprimirArchivo(novelas);
-      '4': exportarATexto(novelas);
-      //'5': hacerBajaLogica(novelas);
-      '6': writeln('Saliendo del programa...');
+      '2': imprimirArchivo(novelas);
+      '3': eliminarNovela(novelas);
+      '4': modificarNovela(novelas);
+      '5': agregarNovela(novelas);
+      '6': exportarATexto(novelas);
+      '7': writeln('Saliendo del programa...');
       Else
         writeln('Opcion inválida.');
     End;
-  Until opcion = '6';
+  Until opcion = '7';
 End.

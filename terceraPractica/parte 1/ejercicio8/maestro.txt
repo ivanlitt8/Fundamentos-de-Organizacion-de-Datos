@@ -1,0 +1,24 @@
+Ubuntu
+2004 5.15 1500
+Una distribucion de Linux basada en Debian
+Arch Linux
+2002 5.16 300
+Una distribucion ligera y flexible de Linux
+Fedora
+2003 5.14 700
+Una distribucion comunitaria y patrocinada por Red Hat
+openSUSE
+2005 5.13 400
+Una distribucion Linux profesional y facil de usar
+Debian
+1993 5.10 2000
+Una distribucion estable y potente de Linux
+Gentoo Linux
+2002 5.12 150
+Una distribucion basada en la fuente altamente personalizable
+CentOS
+2004 5.11 800
+Una distribucion de Linux de nivel empresarial derivada de fuentes gratuitas
+Linux Mint
+2006 5.11 250
+Una distribucion moderna, elegante y facil de usar basada en Ubuntu

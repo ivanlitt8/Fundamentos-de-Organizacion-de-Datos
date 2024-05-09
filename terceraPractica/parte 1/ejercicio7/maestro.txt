@@ -1,0 +1,40 @@
+1004
+Aguila Real
+Accipitridae
+Ave rapaz que habita en diversas regiones del mundo.
+Europa, Asia, America del Norte
+1006
+Kakapo
+Strigopidae
+Ave loro nocturna de Nueva Zelanda. Es una especie en peligro critico de extincion.
+Nueva Zelanda
+1008
+Cotorra de Puerto Rico
+Psittacidae
+Ave endemica de Puerto Rico en peligro de extincion debido a la deforestacion.
+Puerto Rico
+1005
+Colibri Picoespada
+Trochilidae
+Especie de colibri que se encuentra en las montañas de America Central.
+America Central
+1007
+Albatros Errante
+Diomedeidae
+Ave marina de gran tamanio que realiza largas migraciones.
+Oceanos del sur
+1009
+Ara de Lear
+Psittacidae
+Ave endemica de Brasil con brillantes colores. En peligro critico de extincion.
+Brasil
+1010
+Condor de California
+Cathartidae
+Ave carroniera que habita en America del Norte. En peligro critico de extincion.
+America del Norte
+1011
+Colibri Esmeralda
+Trochilidae
+Pequenio colibri con plumaje verde brillante.
+America del Sur

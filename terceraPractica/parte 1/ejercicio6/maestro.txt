@@ -1,0 +1,40 @@
+1001
+Camisa de algodon
+Blanco
+Camisa
+50 25.99
+1002
+Pantalon vaquero
+Azul
+Pantalon
+30 39.99
+1003
+Vestido floral
+Magenta Verde
+Vestido
+20 49.99
+1004
+Sudadera con capucha
+Gris
+Sudadera
+40 29.99
+1005
+Bufanda de lana
+Gris Azul
+Bufanda
+15 14.99
+1006
+Chaqueta de cuero
+Marron
+Chaqueta
+25 89.99
+1007
+Falda plisada
+Negra
+Falda
+35 19.99
+1008
+Sombrero de paja
+Natural
+Sombrero
+10 9.99

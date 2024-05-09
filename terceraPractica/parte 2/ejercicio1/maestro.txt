@@ -1,0 +1,30 @@
+001
+Detergente
+2.50 100 20
+004
+Esponja Abrasiva
+0.75 150 50
+007
+Desodorante Ambiental
+1.80 70 15
+003
+Desinfectante
+3.00 120 40
+009
+Limpiador Multiusos
+2.20 90 25
+006
+Jabon en Polvo
+2.80 110 30
+008
+Cera para Pisos
+4.50 80 20
+002
+Limpiavidrios
+1.75 80 30
+005
+Quitamanchas
+2.00 90 25
+010
+Trapo de Microfibra
+1.20 200 60

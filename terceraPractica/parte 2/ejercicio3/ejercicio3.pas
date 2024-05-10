@@ -15,201 +15,97 @@
 Program ejercicio3;
 
 Const 
-  fin = 'ZZZZ';
+  dimF = 3;
 
 Type 
-  linux = Record
-    nombre: String;
-    anioLanz: Integer;
-    vKernel: real;
-    cantDevs: Integer;
-    descrip: String;
-  End;
-  arch_linux = File Of linux;
 
-Procedure leerDistribucion(Var arch:Text ; Var L: linux);
+  rango = 1..dimF;
+
+  sesion = Record
+    codUsuario: integer;
+    fecha: string;
+    tiempoSesion: real;
+  End;
+
+  arch_sesion = File Of sesion;
+
+  vectSesiones = array[rango] Of arch_sesion;
+  vectRegistroSesiones = array[rango] Of sesion;
+  vectString = array[rango] Of String;
+
+Procedure leerSesion(Var arch:Text ; Var S: sesion);
 Begin
-  readln(arch, L.nombre);
-  readln(arch, L.anioLanz, L.vKernel, L.cantDevs);
-  readln(arch, L.descrip);
-  writeln('Nombre: ', L.nombre);
-  writeln('Anio Lanzamiento: ', L.anioLanz);
-  writeln('Version Kernel: ', L.vKernel:0:2);
-  writeln('Cantidad de desarrolladores: ', L.cantDevs);
-  writeln('Descripcion: ', L.descrip);
+  readln(arch, S.codUsuario);
+  readln(arch, S.fecha);
+  readln(arch, S.tiempoSesion);
+  writeln('Codigo: ', S.codUsuario);
+  writeln('Fecha: ', S.fecha);
+  writeln('Tiempo sesion: ', S.tiempoSesion:0:2);
   writeln();
 End;
-Procedure convertirArchivo(Var txt: Text; Var arch: arch_linux);
+
+Procedure imprimirArchivo(Var arch: arch_sesion);
 
 Var 
-  L: linux;
-Begin
-  Reset(txt);
-  Assign(arch,'maestro.dat');
-  Rewrite(arch);
-  L.nombre := '';
-  L.anioLanz := 0;
-  L.vKernel := 0.0;
-  L.cantDevs := 0;
-  L.descrip := '';
-  Write(arch,L);
-  While Not Eof(txt) Do
-    Begin
-      leerDistribucion(txt,L);
-      Write(arch,L);
-    End;
-  Close(txt);
-End;
-Procedure imprimirArchivo(Var arch: arch_linux);
-
-Var 
-  L: linux;
+  S: sesion;
 Begin
   Reset(arch);
   While Not Eof(arch) Do
     Begin
-      Read(arch,L);
-      writeln('Nombre: ', L.nombre);
-      writeln('Anio Lanzamiento: ', L.anioLanz);
-      writeln('Version Kernel: ', L.vKernel:0:2);
-      writeln('Cantidad de desarrolladores: ', L.cantDevs);
-      writeln('Descripcion: ', L.descrip);
+      Read(arch,S);
+      writeln('Codigo de usuario: ', S.codUsuario);
+      writeln('Fecha: ', S.fecha);
+      writeln('Tiempo total de sesion abiertas: ', S.tiempoSesion:0:2);
       writeln('--------------');
     End;
   Close(arch);
 End;
 
-Procedure existeDistribucion(Var arch: arch_linux ; Var encontrado: Boolean ; nombre: String);
+Procedure generarDetalle ( Var arch: arch_sesion; nombre: String);
 
 Var 
-  L: linux;
+  dat,txt: string;
+  detalleTxt: Text;
+  S: sesion;
 Begin
-  encontrado := false;
-  Reset(arch);
-  While Not Eof(arch) And (Not encontrado) Do
+  txt := nombre + '.txt';
+  assign(detalleTxt,txt);
+  reset(detalleTxt);
+  dat := nombre + '.dat';
+  assign(arch,dat);
+  rewrite(arch);
+  While Not eof(detalleTxt) Do
     Begin
-      read(arch,L);
-      If (L.nombre = nombre) Then
-        encontrado := true;
+      leerSesion(detalleTxt,S);
+      write(arch,S);
     End;
-  Close(arch);
-End;
-Procedure borrarDistribucion(Var arch: arch_linux; nombre: String);
-
-Var 
-  L,cabecera: linux;
-  encontrado: Boolean;
-Begin
-  encontrado := false;
-  Reset(arch);
-  Read(arch,cabecera);
-  While (Not eof(arch)) And (Not encontrado) Do
-    Begin
-      read(arch, L);
-      If (L.nombre = nombre) Then
-        Begin
-          encontrado := true;
-          seek(arch, filepos(arch)-1);
-          write(arch, cabecera);
-          cabecera.cantDevs := -(filepos(arch)-1);
-          seek(arch, 0);
-          write(arch, cabecera);
-          writeln('Se elimino exitosamente la distribucion ',nombre);
-        End;
-    End;
-  Close(arch);
-End;
-Procedure bajaDistribucion(Var arch: arch_linux);
-
-Var 
-  nombre: String;
-  existe: Boolean;
-Begin
-  Writeln('Iniciando proceso de eliminacion... Ingrese ZZZZ para finalizar');
-  Write('Ingrese nombre de distribucion a eliminar: ');
-  ReadLn(nombre);
-  While (nombre<>fin) Do
-    Begin
-      existeDistribucion(arch,existe,nombre);
-      If existe Then
-        borrarDistribucion(arch,nombre)
-      Else
-        WriteLn('La distribucion con nombre ',nombre,' no existente');
-      Write('Ingrese nombre de distribucion a eliminar: ');
-      ReadLn(nombre);
-    End;
-End;
-Procedure agregarDistribucion(Var arch: arch_linux ; L: linux);
-
-Var 
-  cabecera: linux;
-Begin
-  reset(arch);
-  read(arch, cabecera);
-  If (cabecera.cantDevs <> 0) Then
-    Begin
-      seek(arch, -cabecera.cantDevs);
-      // Me paro en la pos recuperable
-      read(arch, cabecera);
-      // Leo el registro y lo asigno a cabecera
-      seek(arch, filepos(arch)-1);
-      // Retrocedo por la lectura
-      write(arch, L);
-      // Escribo el nuevo archivo en la posicion
-      seek(arch, 0);
-      // Vuelvo a la posicion 0
-      write(arch, cabecera);
-      // actualizo la cabecera
-    End
-  Else
-    Begin
-      seek(arch, filesize(arch));
-      //Voy a la ult posicion
-      write(arch, L);
-      // Cargo el nuevo registro
-    End;
+  writeln('Archivo ',dat,' exitosamente creado');
+  WriteLn();
+  close(detalleTxt);
   close(arch);
 End;
-Procedure leerLinux(Var L: linux);
-Begin
-  write('Ingrese nombre de distribucion: ');
-  ReadLn(L.nombre);
-  write('Ingrese anio de lanzamiento: ');
-  ReadLn(L.anioLanz);
-  write('Ingrese version Kernel: ');
-  ReadLn(L.vKernel);
-  write('Ingrese cantidad de desarrolladores: ');
-  ReadLn(L.cantDevs);
-  write('Ingrese descripcion: ');
-  ReadLn(L.descrip);
-End;
-Procedure altaDistribucion(Var arch:arch_linux);
+
+Procedure cargarVectorDetalle(Var V:vectSesiones);
 
 Var 
-  L: linux;
-  existe: Boolean;
+  i: rango;
+  vNombres: vectString;
 Begin
-  leerLinux(L);
-  existeDistribucion(arch,existe,L.nombre);
-  If existe Then
-    WriteLn('La distribucion con nombre ',L.nombre,' ya existente.')
-  Else
-    agregarDistribucion(arch,L);
+  vNombres[1] := 'detalleUno';
+  vNombres[2] := 'detalleDos';
+  vNombres[3] := 'detalleTres';
+  For i:= 1 To dimF Do
+    generarDetalle(V[i],vNombres[i]);
+  writeln('Se han generado todos los detalles.')
 End;
 
 Var 
-  txtMaestro: Text;
-  datMaestro: arch_linux;
-  encontrado: Boolean;
+  datMaestro: arch_sesion;
+  V: vectSesiones;
 Begin
-  Assign(txtMaestro,'maestro.txt');
-  convertirArchivo(txtMaestro,datMaestro);
-  WriteLn('---- ARCHIVO ORIGINAL ----');
-  imprimirArchivo(datMaestro);
-  bajaDistribucion(datMaestro);
-  WriteLn('---- ARCHIVO CON BAJAS ----');
-  imprimirArchivo(datMaestro);
-  altaDistribucion(datMaestro);
-  WriteLn('---- ARCHIVO CON ALTAS ----');
+  Assign(datMaestro,'maestro.dat');
+  rewrite(datMaestro);
+  cargarVectorDetalle(V);
+  generarMaestro()
   imprimirArchivo(datMaestro);
 End.

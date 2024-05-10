@@ -55,11 +55,10 @@ Begin
 End;
 Procedure leerVenta(Var arch:Text ; Var V: venta);
 Begin
-  readln(arch, V.codigo);
-  readln(arch, V.cantidad);
-  // writeln('Codigo: ', V.codigo);
-  // writeln('Cantidad vendida: ', V.cantidad);
-  // writeln();
+  readln(arch, V.codigo, V.cantidad);
+  writeln('Codigo: ', V.codigo);
+  writeln('Cantidad vendida: ', V.cantidad);
+  writeln();
 End;
 Procedure imprimirArchivo(Var arch: arch_productos);
 
@@ -120,27 +119,36 @@ Var
   totalVentas: Integer;
 Begin
   Reset(archMae);
+  // Abro Maestro
   Reset(archDet);
+  // Abro Detalle
   While Not Eof(archMae) Do
+    // Recorro el archivo Maestro (productos)
     Begin
       Read(archMae,P);
+      // Leo un Producto
       totalVentas := 0;
+      // Contador en cero
       While Not Eof(archDet) Do
+        // Recorro el archivo Detalle (ventas)
         Begin
           Read(archDet,V);
-          If (P.codigo = V.codigo) Then
+          // Leo una venta
+          If (P.codigo = V.codigo) Then                            // si hay coincidencia
             totalVentas := totalVentas + V.cantidad;
+          // Acumulo las ventas
         End;
-      // seek(archDet, 0);
-      // If (totalVentas <> 0) Then
-      //   Begin
-      //     P.stockActual := P.stockActual - totalVentas;
-      //     seek(archMae, filepos(archMae)-1);
-      //     write(archMae, P);
-      //   End;
-      P.stockActual := P.stockActual - totalVentas;
-      Seek(archMae,FilePos(archMae)-1);
-      Write(archMae,P);
+      If (totalVentas > 0) Then
+        Begin
+          P.stockActual := P.stockActual - totalVentas;
+          // actualizo el stock del producto
+          Seek(archMae,FilePos(archMae)-1);
+          // retrocedo una posicion 
+          Write(archMae,P);
+          // reescribo el producto
+        End;
+      seek(archDet, 0);
+      // Posiciono nuevamente en el inicio el archivo de ventas para el prox producto
     End;
   Close(archMae);
   Close(archDet);

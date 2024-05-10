@@ -17,202 +17,138 @@
 
 Program ejercicio2;
 
-Const 
-  fin = 'ZZZZ';
-
 Type 
-  linux = Record
-    nombre: String;
-    anioLanz: Integer;
-    vKernel: real;
-    cantDevs: Integer;
-    descrip: String;
+  mesa = Record
+    codLocalidad: integer;
+    nroMesa: integer;
+    cantVotos: integer;
   End;
-  arch_linux = File Of linux;
 
-Procedure leerDistribucion(Var arch:Text ; Var L: linux);
+  mesaAux = Record
+    codLocalidad: integer;
+    cantVotos: integer;
+  End;
+
+  arch_mesa = File Of mesa;
+  arch_mesaAux = File Of mesaAux;
+
+Procedure leerMesa(Var arch:Text ; Var M: mesa);
 Begin
-  readln(arch, L.nombre);
-  readln(arch, L.anioLanz, L.vKernel, L.cantDevs);
-  readln(arch, L.descrip);
-  writeln('Nombre: ', L.nombre);
-  writeln('Anio Lanzamiento: ', L.anioLanz);
-  writeln('Version Kernel: ', L.vKernel:0:2);
-  writeln('Cantidad de desarrolladores: ', L.cantDevs);
-  writeln('Descripcion: ', L.descrip);
-  writeln();
+  readln(arch, M.codLocalidad, M.nroMesa, M.cantVotos);
+  // writeln('Codigo ciudad: ', M.codLocalidad);
+  // writeln('Numero de mesa: ', M.nroMesa);
+  // writeln('Cantidad de votos: ', M.cantVotos);
+  // writeln();
 End;
-Procedure convertirArchivo(Var txt: Text; Var arch: arch_linux);
+Procedure convertirArchivo(Var txt: Text; Var arch: arch_mesa);
 
 Var 
-  L: linux;
+  M: mesa;
 Begin
   Reset(txt);
   Assign(arch,'maestro.dat');
   Rewrite(arch);
-  L.nombre := '';
-  L.anioLanz := 0;
-  L.vKernel := 0.0;
-  L.cantDevs := 0;
-  L.descrip := '';
-  Write(arch,L);
   While Not Eof(txt) Do
     Begin
-      leerDistribucion(txt,L);
-      Write(arch,L);
+      leerMesa(txt,M);
+      Write(arch,M);
     End;
   Close(txt);
 End;
-Procedure imprimirArchivo(Var arch: arch_linux);
+Procedure imprimirArchivo(Var arch: arch_mesa);
 
 Var 
-  L: linux;
+  M: mesa;
 Begin
   Reset(arch);
   While Not Eof(arch) Do
     Begin
-      Read(arch,L);
-      writeln('Nombre: ', L.nombre);
-      writeln('Anio Lanzamiento: ', L.anioLanz);
-      writeln('Version Kernel: ', L.vKernel:0:2);
-      writeln('Cantidad de desarrolladores: ', L.cantDevs);
-      writeln('Descripcion: ', L.descrip);
+      Read(arch,M);
+      writeln('Codigo ciudad: ', M.codLocalidad);
+      writeln('Numero de mesa: ', M.nroMesa);
+      writeln('Cantidad de votos: ', M.cantVotos);
       writeln('--------------');
     End;
   Close(arch);
 End;
-
-Procedure existeDistribucion(Var arch: arch_linux ; Var encontrado: Boolean ; nombre: String);
-
-Var 
-  L: linux;
-Begin
-  encontrado := false;
-  Reset(arch);
-  While Not Eof(arch) And (Not encontrado) Do
-    Begin
-      read(arch,L);
-      If (L.nombre = nombre) Then
-        encontrado := true;
-    End;
-  Close(arch);
-End;
-Procedure borrarDistribucion(Var arch: arch_linux; nombre: String);
+Procedure acumularDatos(Var archAux:arch_mesaAux ; Var archMae:arch_mesa);
 
 Var 
-  L,cabecera: linux;
+  M: mesa;
+  Maux: mesaAux;
   encontrado: Boolean;
 Begin
-  encontrado := false;
-  Reset(arch);
-  Read(arch,cabecera);
-  While (Not eof(arch)) And (Not encontrado) Do
+  Reset(archMae);
+  While Not eof(archMae) Do
     Begin
-      read(arch, L);
-      If (L.nombre = nombre) Then
+      Read(archMae, M);
+      encontrado := false;
+      Reset(archAux);
+      // Posicionar el cursor al principio del archivo auxiliar
+      While Not eof(archAux) Do
+        // Buscar si ya hay información para la localidad actual
         Begin
-          encontrado := true;
-          seek(arch, filepos(arch)-1);
-          write(arch, cabecera);
-          cabecera.cantDevs := -(filepos(arch)-1);
-          seek(arch, 0);
-          write(arch, cabecera);
-          writeln('Se elimino exitosamente la distribucion ',nombre);
+          Read(archAux,Maux);
+          If (M.codLocalidad = Maux.codLocalidad) Then
+            Begin
+              encontrado := true;
+              Maux.cantVotos := Maux.cantVotos + M.cantVotos;
+              Seek(archAux, FilePos(archAux) - 1);
+              // Mover el puntero de lectura/escritura de nuevo al registro actual para actualizarlo
+              Write(archAux, Maux);
+            End;
+        End;
+      // Si no se encontró información, agregarla al archivo auxiliar
+      If Not encontrado Then
+        Begin
+          Maux.cantVotos := M.cantVotos;
+          Maux.codLocalidad := M.codLocalidad;
+          Seek(archAux, FileSize(archAux));
+          // Mover el puntero de lectura/escritura al final del archivo auxiliar
+          Write(archAux, Maux);
+          // Escribir un nuevo registro en el archivo auxiliar
         End;
     End;
+End;
+
+Procedure imprimirNuevoArchivo (Var arch:arch_mesaAux);
+
+Var 
+  Maux: mesaAux;
+  totalVotos: Integer;
+Begin
+  Reset(arch);
+  totalVotos := 0;
+  WriteLn();
+  WriteLn('Codigo de Localidad        Total de Votos');
+  WriteLn();
+  While Not Eof(arch) Do
+    Begin
+      Read(arch,Maux);
+      writeln('         ',Maux.codLocalidad,'                   ',Maux.cantVotos);
+      totalVotos := totalVotos + Maux.cantVotos;
+    End;
   Close(arch);
-End;
-Procedure bajaDistribucion(Var arch: arch_linux);
-
-Var 
-  nombre: String;
-  existe: Boolean;
-Begin
-  Writeln('Iniciando proceso de eliminacion... Ingrese ZZZZ para finalizar');
-  Write('Ingrese nombre de distribucion a eliminar: ');
-  ReadLn(nombre);
-  While (nombre<>fin) Do
-    Begin
-      existeDistribucion(arch,existe,nombre);
-      If existe Then
-        borrarDistribucion(arch,nombre)
-      Else
-        WriteLn('La distribucion con nombre ',nombre,' no existente');
-      Write('Ingrese nombre de distribucion a eliminar: ');
-      ReadLn(nombre);
-    End;
-End;
-Procedure agregarDistribucion(Var arch: arch_linux ; L: linux);
-
-Var 
-  cabecera: linux;
-Begin
-  reset(arch);
-  read(arch, cabecera);
-  If (cabecera.cantDevs <> 0) Then
-    Begin
-      seek(arch, -cabecera.cantDevs);
-      // Me paro en la pos recuperable
-      read(arch, cabecera);
-      // Leo el registro y lo asigno a cabecera
-      seek(arch, filepos(arch)-1);
-      // Retrocedo por la lectura
-      write(arch, L);
-      // Escribo el nuevo archivo en la posicion
-      seek(arch, 0);
-      // Vuelvo a la posicion 0
-      write(arch, cabecera);
-      // actualizo la cabecera
-    End
-  Else
-    Begin
-      seek(arch, filesize(arch));
-      //Voy a la ult posicion
-      write(arch, L);
-      // Cargo el nuevo registro
-    End;
-  close(arch);
-End;
-Procedure leerLinux(Var L: linux);
-Begin
-  write('Ingrese nombre de distribucion: ');
-  ReadLn(L.nombre);
-  write('Ingrese anio de lanzamiento: ');
-  ReadLn(L.anioLanz);
-  write('Ingrese version Kernel: ');
-  ReadLn(L.vKernel);
-  write('Ingrese cantidad de desarrolladores: ');
-  ReadLn(L.cantDevs);
-  write('Ingrese descripcion: ');
-  ReadLn(L.descrip);
-End;
-Procedure altaDistribucion(Var arch:arch_linux);
-
-Var 
-  L: linux;
-  existe: Boolean;
-Begin
-  leerLinux(L);
-  existeDistribucion(arch,existe,L.nombre);
-  If existe Then
-    WriteLn('La distribucion con nombre ',L.nombre,' ya existente.')
-  Else
-    agregarDistribucion(arch,L);
+  WriteLn();
+  writeln('Total General de Votos:        ', totalVotos);
+  WriteLn();
+  WriteLn();
 End;
 
 Var 
   txtMaestro: Text;
-  datMaestro: arch_linux;
-  encontrado: Boolean;
+  datMaestro: arch_mesa;
+  archivoAuxiliar: arch_mesaAux;
 Begin
   Assign(txtMaestro,'maestro.txt');
+  Assign(archivoAuxiliar, 'archivo_auxiliar.dat');
+  Rewrite(archivoAuxiliar);
   convertirArchivo(txtMaestro,datMaestro);
-  WriteLn('---- ARCHIVO ORIGINAL ----');
-  imprimirArchivo(datMaestro);
-  bajaDistribucion(datMaestro);
-  WriteLn('---- ARCHIVO CON BAJAS ----');
-  imprimirArchivo(datMaestro);
-  altaDistribucion(datMaestro);
-  WriteLn('---- ARCHIVO CON ALTAS ----');
-  imprimirArchivo(datMaestro);
+  //WriteLn('---- ARCHIVO ORIGINAL ----');
+  //imprimirArchivo(datMaestro);
+  acumularDatos(archivoAuxiliar,datMaestro);
+  WriteLn();
+  WriteLn();
+  WriteLn('---- TOTAL DE VOTOS POR CODIGO DE CIUDAD ----');
+  imprimirNuevoArchivo(archivoAuxiliar);
 End.

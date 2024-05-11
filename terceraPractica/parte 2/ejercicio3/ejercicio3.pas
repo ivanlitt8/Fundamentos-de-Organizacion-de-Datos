@@ -16,6 +16,7 @@ Program ejercicio3;
 
 Const 
   dimF = 3;
+  valoralto = 9999;
 
 Type 
 
@@ -38,10 +39,10 @@ Begin
   readln(arch, S.codUsuario);
   readln(arch, S.fecha);
   readln(arch, S.tiempoSesion);
-  writeln('Codigo: ', S.codUsuario);
-  writeln('Fecha: ', S.fecha);
-  writeln('Tiempo sesion: ', S.tiempoSesion:0:2);
-  writeln();
+  // writeln('Codigo: ', S.codUsuario);
+  // writeln('Fecha: ', S.fecha);
+  // writeln('Tiempo sesion: ', S.tiempoSesion:0:2);
+  // writeln();
 End;
 
 Procedure imprimirArchivo(Var arch: arch_sesion);
@@ -99,6 +100,67 @@ Begin
   writeln('Se han generado todos los detalles.')
 End;
 
+Procedure leerDetalle (Var arch:arch_sesion; Var S: sesion);
+Begin
+  If (Not eof(arch)) Then
+    read(arch, S)
+  Else
+    S.codUsuario := valoralto;
+End;
+
+Procedure minimo (Var V: vectSesiones; Var vectDet: vectRegistroSesiones ; Var Smin: sesion);
+
+Var 
+  pos,i: integer;
+Begin
+  Smin.codUsuario := valorAlto;
+  For i:= 1 To dimF Do
+    If (vectDet[i].codUsuario < Smin.codUsuario) Then
+      Begin
+        Smin := vectDet[i];
+        pos := i;
+      End;
+  If (Smin.codUsuario <> valorAlto) Then
+    leerDetalle(V[pos],vectDet[pos]);
+End;
+
+
+Procedure generarMaestro(Var V:vectSesiones; Var arch: arch_sesion);
+
+Var 
+  i: integer;
+  S, Saux: sesion;
+  encontrado: boolean;
+Begin
+  reset(arch);
+  For i:= 1 To dimF Do
+    Begin
+      reset(V[i]);
+      While Not eof(V[i]) Do
+        Begin
+          read(V[i], S);
+          encontrado := false;
+          seek(arch, 0);
+          While (Not eof(arch)) And (Not encontrado) Do
+            Begin
+              read(arch, Saux);
+              If (Saux.codUsuario= S.codUsuario) Then
+                encontrado := true;
+            End;
+          If (encontrado) Then
+            Begin
+              Saux.tiempoSesion := Saux.tiempoSesion + S.tiempoSesion;
+              seek(arch, filepos(arch)-1);
+              write(arch, Saux);
+            End
+          Else
+            write(arch, S);
+        End;
+      close(V[i]);
+    End;
+  close(arch);
+End;
+
 Var 
   datMaestro: arch_sesion;
   V: vectSesiones;
@@ -106,6 +168,6 @@ Begin
   Assign(datMaestro,'maestro.dat');
   rewrite(datMaestro);
   cargarVectorDetalle(V);
-  generarMaestro()
+  generarMaestro(V,datMaestro);
   imprimirArchivo(datMaestro);
 End.

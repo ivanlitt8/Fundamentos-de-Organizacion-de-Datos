@@ -26,7 +26,7 @@ Begin
     End;
 
   If Eof(A) Then // significa que es un árbol vacío y el elemento es insertado como raíz
-    Write(A,nodo_nuevo);
+    Write(A,nodo_nuevo)
   Else
     Begin
       Read(A, Raiz);
@@ -68,7 +68,7 @@ Begin
             End;
         End;
       // raíz es el padre y ya lo leí, debo volver a posicionarme
-      Seek(A, Filepos(A)—1);
+      Seek(A, Filepos(A) — 1);
       //guardo al padre con la nueva referencia}
       Write (A, raiz);
     End.
